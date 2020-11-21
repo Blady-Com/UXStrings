@@ -17,7 +17,8 @@ project UXStrings1 is
       for Default_Switches ("ada") use ("-gnatW8", "-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y",
                                         "-fstack-check", "-g", "-gnato", "-gnata",
                                         "-gnateE", "-gnateF", "-Wall",
-                                        "-gnatec=" & UXStrings1'Project_Dir & "pragma_debug.adc");
+                                        "-gnatec=" & UXStrings1'Project_Dir & "pragma_debug.adc",
+                                        "-gnat2020");
    end Compiler;
 
    package Binder is

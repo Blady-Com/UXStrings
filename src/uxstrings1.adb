@@ -238,28 +238,28 @@ package body UXStrings is
    end Is_BMP;
 
    ------------
-   -- To_BPM --
+   -- To_BMP --
    ------------
 
-   function To_BPM (Source : UXString; Index : Positive; Substitute : in BMP_Character := '¿') return BMP_Character is
+   function To_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := '¿') return BMP_Character is
    begin
       return Source (Index, Substitute);
-   end To_BPM;
+   end To_BMP;
 
    ------------
-   -- To_BPM --
+   -- To_BMP --
    ------------
 
-   function To_BPM (Source : UXString; Substitute : in BMP_Character := '¿') return BPM_Character_Array is
+   function To_BMP (Source : UXString; Substitute : in BMP_Character := '¿') return BMP_Character_Array is
    begin
       return To_Wide_String (String (Source.Chars.all), Substitute);
-   end To_BPM;
+   end To_BMP;
 
    --------------
    -- From_BMP --
    --------------
 
-   function From_BMP (Str : BPM_Character_Array) return UXString is
+   function From_BMP (Str : BMP_Character_Array) return UXString is
    begin
       return UXS : UXString do
          UXS.Chars := new UTF_8_Character_Array'(UTF_8_Character_Array (To_UTF8 (Str)));
@@ -380,11 +380,28 @@ package body UXStrings is
    -- Append --
    ------------
 
-   procedure Append (Source : in out UXString; New_Wide_Wide_Item : Unicode_Character) is
+   procedure Append (Source : in out UXString; New_Item : Unicode_Character) is
    begin
-      Source.Chars :=
-        new UTF_8_Character_Array'(Source.Chars.all & UTF_8_Character_Array (To_UTF8 (New_Wide_Wide_Item)));
+      Source.Chars := new UTF_8_Character_Array'(Source.Chars.all & UTF_8_Character_Array (To_UTF8 (New_Item)));
    end Append;
+
+   -------------
+   -- Prepend --
+   -------------
+
+   procedure Prepend (Source : in out UXString; New_Item : UXString) is
+   begin
+      Source.Chars := new UTF_8_Character_Array'(New_Item.Chars.all & Source.Chars.all);
+   end Prepend;
+
+   -------------
+   -- Prepend --
+   -------------
+
+   procedure Prepend (Source : in out UXString; New_Item : Unicode_Character) is
+   begin
+      Source.Chars := new UTF_8_Character_Array'(UTF_8_Character_Array (To_UTF8 (New_Item)) & Source.Chars.all);
+   end Prepend;
 
    ---------
    -- "&" --
