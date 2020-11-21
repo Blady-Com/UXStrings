@@ -93,7 +93,6 @@ This implementation which is only for demonstrate the possible usages of UXStrin
 
 #### Limitations:
 
-- no memory deallocation
 - not thread safe
 - single character assignment is not implemented
 - only few API are implemented

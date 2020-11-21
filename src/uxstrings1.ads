@@ -194,6 +194,9 @@ private
       Index          : Natural := 0;
    end record;
 
+   procedure Adjust     (Object : in out UXString);
+   procedure Finalize   (Object : in out UXString);
+
    Null_UXString : constant UXString :=
      (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1), others => <>);
 end UXStrings;

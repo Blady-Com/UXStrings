@@ -13,6 +13,7 @@ with Ada.Strings.UTF_Encoding;   use Ada.Strings.UTF_Encoding;
 with Ada.Strings.Fixed;          use Ada.Strings.Fixed;
 with Strings_Edit.UTF8;          use Strings_Edit.UTF8;
 with Strings_Edit.UTF8.Handling; use Strings_Edit.UTF8.Handling;
+with Ada.Unchecked_Deallocation;
 
 package body UXStrings is
 
@@ -49,6 +50,33 @@ package body UXStrings is
       end loop;
       return Result (1 .. To - 1);
    end To_Wide_Wide_String;
+
+   -- Memory management
+
+   ------------
+   -- Adjust --
+   ------------
+
+   procedure Adjust (Object : in out UXString) is
+   begin
+      if Object.Chars /= null then
+         Object.Chars := new UTF_8_Character_Array'(Object.Chars.all);
+      end if;
+   end Adjust;
+
+   --------------
+   -- Finalize --
+   --------------
+
+   procedure Finalize (Object : in out UXString) is
+      procedure Free is new Ada.Unchecked_Deallocation (UTF_8_Character_Array, UTF_8_Characters_Access);
+   begin
+      if Object.Chars /= null then
+         Free (Object.Chars);
+      end if;
+   end Finalize;
+
+   -- UXStrings API implementation
 
    ------------
    -- Length --
