@@ -53,6 +53,12 @@ package body UXStrings is
 
    -- Memory management
 
+   ----------
+   -- Free --
+   ----------
+
+   procedure Free is new Ada.Unchecked_Deallocation (UTF_8_Character_Array, UTF_8_Characters_Access);
+
    ------------
    -- Adjust --
    ------------
@@ -69,7 +75,6 @@ package body UXStrings is
    --------------
 
    procedure Finalize (Object : in out UXString) is
-      procedure Free is new Ada.Unchecked_Deallocation (UTF_8_Character_Array, UTF_8_Characters_Access);
    begin
       if Object.Chars /= null then
          Free (Object.Chars);
@@ -400,8 +405,12 @@ package body UXStrings is
    ------------
 
    procedure Append (Source : in out UXString; New_Item : UXString) is
+      Saved_Access : UTF_8_Characters_Access := Source.Chars;
    begin
       Source.Chars := new UTF_8_Character_Array'(Source.Chars.all & New_Item.Chars.all);
+      if Saved_Access /= null then
+         Free (Saved_Access);
+      end if;
    end Append;
 
    ------------
@@ -409,8 +418,12 @@ package body UXStrings is
    ------------
 
    procedure Append (Source : in out UXString; New_Item : Unicode_Character) is
+      Saved_Access : UTF_8_Characters_Access := Source.Chars;
    begin
       Source.Chars := new UTF_8_Character_Array'(Source.Chars.all & UTF_8_Character_Array (To_UTF8 (New_Item)));
+      if Saved_Access /= null then
+         Free (Saved_Access);
+      end if;
    end Append;
 
    -------------
@@ -418,8 +431,12 @@ package body UXStrings is
    -------------
 
    procedure Prepend (Source : in out UXString; New_Item : UXString) is
+      Saved_Access : UTF_8_Characters_Access := Source.Chars;
    begin
       Source.Chars := new UTF_8_Character_Array'(New_Item.Chars.all & Source.Chars.all);
+      if Saved_Access /= null then
+         Free (Saved_Access);
+      end if;
    end Prepend;
 
    -------------
@@ -427,8 +444,12 @@ package body UXStrings is
    -------------
 
    procedure Prepend (Source : in out UXString; New_Item : Unicode_Character) is
+      Saved_Access : UTF_8_Characters_Access := Source.Chars;
    begin
       Source.Chars := new UTF_8_Character_Array'(UTF_8_Character_Array (To_UTF8 (New_Item)) & Source.Chars.all);
+      if Saved_Access /= null then
+         Free (Saved_Access);
+      end if;
    end Prepend;
 
    ---------
@@ -501,6 +522,9 @@ package body UXStrings is
       Skip (String (Source.Chars.all), Pointer1, Low - 1);
       Pointer2 := Pointer1;
       Skip (String (Source.Chars.all), Pointer2, High - Low + 1);
+      if Target.Chars /= null then
+         Free (Target.Chars);
+      end if;
       Target.Chars := new UTF_8_Character_Array'(UTF_8_Character_Array (Source.Chars.all (Pointer1 .. Pointer2 - 1)));
    end Slice;
 
@@ -830,14 +854,18 @@ package body UXStrings is
    ------------
 
    procedure Delete (Source : in out UXString; From : Positive; Through : Natural) is
-      Pointer1 : Integer := 1;
-      Pointer2 : Integer := 1;
+      Pointer1     : Integer                 := 1;
+      Pointer2     : Integer                 := 1;
+      Saved_Access : UTF_8_Characters_Access := Source.Chars;
    begin
       Skip (String (Source.Chars.all), Pointer1, From - 1);
       Pointer2 := Pointer1;
       Skip (String (Source.Chars.all), Pointer2, Through - From + 1);
       Source.Chars :=
         new UTF_8_Character_Array'(UTF_8_Character_Array (Delete (String (Source.Chars.all), Pointer1, Pointer2 - 1)));
+      if Saved_Access /= null then
+         Free (Saved_Access);
+      end if;
    end Delete;
 
    ----------
