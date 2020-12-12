@@ -32,7 +32,7 @@ begin
    S3 := From_Unicode ("une soirée passée à étudier les mathématiques ℕ⊂𝕂...");
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Send (To_UTF_8 (S1) & To_UTF_8 (S3));
-   S2  := "Received: " & From_UTF8 (Receive);
+   S2  := "Received: " & From_UTF_8 (Receive);
    S3 := S1 & " - Sent ok";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    S1 := 4*'.';

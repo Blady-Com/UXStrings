@@ -64,22 +64,25 @@ package UXStrings is
    function To_Latin_1
      (Source : UXString; Index : Positive; Substitute : in Latin_1_Character := '¿') return Latin_1_Character;
    function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := '¿') return Latin_1_Character_Array;
+   function From_Latin_1 (Char : Latin_1_Character) return UXString;
    function From_Latin_1 (Str : Latin_1_Character_Array) return UXString;
 
    function Is_BMP (Source : UXString; Index : Positive) return Boolean;
    function Is_BMP (Source : UXString) return Boolean;
    function To_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := '¿') return BMP_Character;
    function To_BMP (Source : UXString; Substitute : in BMP_Character := '¿') return BMP_Character_Array;
+   function From_BMP (Char : BMP_Character) return UXString;
    function From_BMP (Str : BMP_Character_Array) return UXString;
 
    function Is_Unicode (Source : UXString; Index : Positive) return Boolean;
    function Is_Unicode (Source : UXString) return Boolean;
    function To_Unicode (Source : UXString; Index : Positive) return Unicode_Character;
    function To_Unicode (Source : UXString) return Unicode_Character_Array;
+   function From_Unicode (Char : Unicode_Character) return UXString;
    function From_Unicode (Str : Unicode_Character_Array) return UXString;
 
    function To_UTF_8 (Source : UXString; Output_BOM : Boolean := False) return UTF_8_Character_Array;
-   function From_UTF8 (Str : UTF_8_Character_Array) return UXString;
+   function From_UTF_8 (Str : UTF_8_Character_Array) return UXString;
 
    function To_UTF_16
      (Source : UXString; Output_Scheme : UTF_16_Encoding_Scheme; Output_BOM : Boolean := False)
@@ -187,15 +190,15 @@ private
 
    type UTF_8_Characters_Access is access UTF_8_Character_Array;
    type UXString is new Ada.Finalization.Controlled with record
-      Chars          : UTF_8_Characters_Access;
+      Chars          : UTF_8_Characters_Access := new UTF_8_Character_Array (2 .. 1);
       Char           : aliased Char_Type;
       Wide_Char      : aliased Wide_Char_Type;
       Wide_Wide_Char : aliased Wide_Wide_Char_Type;
-      Index          : Natural := 0;
+      Index          : Natural                 := 0;
    end record;
 
-   procedure Adjust     (Object : in out UXString);
-   procedure Finalize   (Object : in out UXString);
+   procedure Adjust (Object : in out UXString);
+   procedure Finalize (Object : in out UXString);
 
    Null_UXString : constant UXString :=
      (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1), others => <>);
