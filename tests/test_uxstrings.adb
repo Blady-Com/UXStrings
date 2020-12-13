@@ -46,6 +46,7 @@ begin
    S2 := "une soirée passée à étudier la physique ω=Δθ/Δt...";
    S3 := "une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
+   Put_Line (From_Latin_1(Index (S1, "ée")'img & Index (S2, "ée")'img & index (S3, "ée", 10)'img));
    C   := S1 (6);
    WC  := S1 (7);
    WWC := S1 (1);
