@@ -199,6 +199,15 @@ package body UXStrings is
       return Index <= Length (Source);
    end Has_Element;
 
+   ----------
+   -- Last --
+   ----------
+
+   function Last (Source : UXString) return Natural is
+   begin
+      return Length (Source);
+   end Last;
+
    ----------------
    -- Is_Latin_1 --
    ----------------
@@ -906,8 +915,9 @@ package body UXStrings is
 
    function Trim (Source : UXString; Side : Trim_End) return UXString is
    begin
-      pragma Compile_Time_Warning (Standard.True, "Trim unimplemented");
-      return raise Program_Error with "Unimplemented function Trim";
+      return UXS : UXString do
+         UXS.Chars := new UTF_8_Character_Array'(UTF_8_Character_Array (Trim (String (Source.Chars.all), Side)));
+      end return;
    end Trim;
 
    ----------
