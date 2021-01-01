@@ -52,26 +52,27 @@ begin
    S3 := "une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Put_Line (Image(Index (S1, "ée")) & Image(Index (S2, "ée"),prefix=> ' ') & Image(index (S3, "ée", 10),prefix =>' '));
-   C   := S1 (6);
-   WC  := S1 (7);
+   C   := S1.Get_Latin_1 (6);
+   WC  := S1.Get_BMP (7);
    WWC := S1 (1);
    Put_Line (Image(Character'pos (C), 16) & ',' & Image(Wide_Character'pos (WC), 16)  & ','& Image(Wide_Wide_Character'pos (WWC), 16));
    for I in S3 loop
-      F   := S3 (I) = Character'('é');
-      if F then
-         S2 (I) := Character'('e');
-      end if;
+      F   := S3.Get_Latin_1 (I) = 'é';
+--        if F then
+--           Replace_Latin_1 (S2 ,I, 'e');
+--        end if;
       WWC := S3 (I);
       Put_Line (Image(I) & ':' & Image(Wide_Wide_Character'pos (WWC), 16) & ',' & Image(F));
    end loop;
-   for CC : Wide_Wide_Character of S2 loop
+   for CC of S2 loop
       WWC := CC;
       F   := CC = 'é';
       Put_Line (Image(Wide_Wide_Character'pos (WWC), 16)  & ','& Image(F));
    end loop;
-   --     S1 (3) := WWC; -- discriminant check failed
-   --     S1 (2) := WC; -- discriminant check failed
-   S1 (1) := C;
+--     Replace_Unicode (S1 ,3, WWC);
+--     S1.Replace_BMP (2, WC);
+--     S1.Replace_Latin_1 (1, C);
+--     Put_Line (S1);
    if S1 /= "test" then
       S1 := Null_UXString;
       S2 := 2 * 'z';
@@ -85,6 +86,10 @@ begin
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Put_Line (Image(Integer(UXStrings.Hash(S1)),16));
    Put_Line (Image (Value("  + 73")));
+   C := S1.To_Latin_1 (3);
+   Put_Line (Image(Character'pos (C), 16));
+   C := S1.Get_Latin_1 (3); -- same result but avoid all string conversion
+   Put_Line (Image(Character'pos (C), 16));
    Put_Line ("--end--");
 end Test_UXStrings;
 
