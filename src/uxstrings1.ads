@@ -38,6 +38,7 @@ package UXStrings is
 
    function First (Source : UXString) return Positive;
    function Next (Source : UXString; Index : Positive) return Positive;
+   procedure Next (Source : UXString; Index : in out Positive);
    function Has_Element (Source : UXString; Index : Positive) return Boolean;
    function Element (Source : UXString; Index : Positive) return Unicode_Character;
    function Last (Source : UXString) return Natural;
@@ -47,30 +48,30 @@ package UXStrings is
    function Get_Latin_1
      (Source : UXString; Index : Positive; Substitute : in Latin_1_Character := '¿') return Latin_1_Character;
    function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := '¿') return Latin_1_Character_Array;
-   function From_Latin_1 (Char : Latin_1_Character) return UXString;
-   function From_Latin_1 (Str : Latin_1_Character_Array) return UXString;
+   function From_Latin_1 (Item : Latin_1_Character) return UXString;
+   function From_Latin_1 (Source : Latin_1_Character_Array) return UXString;
 
    function Is_BMP (Source : UXString; Index : Positive) return Boolean;
    function Is_BMP (Source : UXString) return Boolean;
    function Get_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := '¿') return BMP_Character;
    function To_BMP (Source : UXString; Substitute : in BMP_Character := '¿') return BMP_Character_Array;
-   function From_BMP (Char : BMP_Character) return UXString;
-   function From_BMP (Str : BMP_Character_Array) return UXString;
+   function From_BMP (Item : BMP_Character) return UXString;
+   function From_BMP (Source : BMP_Character_Array) return UXString;
 
    function Is_Unicode (Source : UXString; Index : Positive) return Boolean;
    function Is_Unicode (Source : UXString) return Boolean;
    function Get_Unicode (Source : UXString; Index : Positive) return Unicode_Character;
    function To_Unicode (Source : UXString) return Unicode_Character_Array;
-   function From_Unicode (Char : Unicode_Character) return UXString;
-   function From_Unicode (Str : Unicode_Character_Array) return UXString;
+   function From_Unicode (Item : Unicode_Character) return UXString;
+   function From_Unicode (Source : Unicode_Character_Array) return UXString;
 
    function To_UTF_8 (Source : UXString; Output_BOM : Boolean := False) return UTF_8_Character_Array;
-   function From_UTF_8 (Str : UTF_8_Character_Array) return UXString;
+   function From_UTF_8 (Source : UTF_8_Character_Array) return UXString;
 
    function To_UTF_16
      (Source : UXString; Output_Scheme : UTF_16_Encoding_Scheme; Output_BOM : Boolean := False)
       return UTF_16_Character_Array;
-   function From_UTF_16 (Str : UTF_16_Character_Array; Input_Scheme : UTF_16_Encoding_Scheme) return UXString;
+   function From_UTF_16 (Source : UTF_16_Character_Array; Input_Scheme : UTF_16_Encoding_Scheme) return UXString;
 
    procedure Set (Target : out UXString; Unicode_Source : Unicode_Character_Array);
 
