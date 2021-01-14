@@ -1,10 +1,12 @@
 with Ada.Strings;                use Ada.Strings;
 with Ada.Strings.Wide_Wide_Maps; use Ada.Strings.Wide_Wide_Maps;
+with Ada.Strings.UTF_Encoding;
 private with Ada.Finalization;
 
 package UXStrings is
 
    type Encoding_Scheme is (Latin_1, UTF_8, UTF_16BE, UTF_16LE);
+   subtype UTF_16_Encoding_Scheme is Encoding_Scheme range UTF_16BE .. UTF_16LE;
 
    -- ISO/IEC 8859-1
    subtype Latin_1_Character is Character;
@@ -20,12 +22,9 @@ package UXStrings is
    subtype Unicode_Character is Wide_Wide_Character;
    subtype Unicode_Character_Array is Wide_Wide_String;
 
-   subtype UTF_8_Character is Character;
-   type UTF_8_Character_Array is array (Positive range <>) of UTF_8_Character;
-
-   subtype UTF_16_Encoding_Scheme is Encoding_Scheme range UTF_16BE .. UTF_16LE;
-   subtype UTF_16_Character is Wide_Character;
-   type UTF_16_Character_Array is array (Positive range <>) of UTF_16_Character;
+   -- UTF encoding
+   subtype UTF_8_Character_Array is Ada.Strings.UTF_Encoding.UTF_String;
+   subtype UTF_16_Character_Array is Ada.Strings.UTF_Encoding.UTF_String;
 
    type UXString is tagged private with
       Constant_Indexing => Element,
