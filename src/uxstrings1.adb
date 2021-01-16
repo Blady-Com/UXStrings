@@ -4,13 +4,14 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 202x
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2020
+-- COPYRIGHT                    : (c) Pascal Pignard 2021
 -- LICENCE                      : CeCILL V2.1 (https://www.cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
 
 with Ada.Strings.Fixed;          use Ada.Strings.Fixed;
-with Ada.Strings.UTF_Encoding.Conversions;
+--  with Ada.Strings.UTF_Encoding.Conversions;
+with STUTEN.SUEnco; -- Fix an issue in UTF-16 to UTF8 conversion
 with Ada.Unchecked_Deallocation;
 with Strings_Edit.UTF8;          use Strings_Edit.UTF8;
 with Strings_Edit.UTF8.Handling; use Strings_Edit.UTF8.Handling;
@@ -53,9 +54,12 @@ package body UXStrings is
 
    -- Encoding Scheme cross correspondance
 
-   To_UTF_Encoding : constant array (Encoding_Scheme) of Ada.Strings.UTF_Encoding.Encoding_Scheme :=
-     (Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_16BE,
-      Ada.Strings.UTF_Encoding.UTF_16LE);
+--     To_UTF_Encoding : constant array (Encoding_Scheme) of Ada.Strings.UTF_Encoding.Encoding_Scheme :=
+--       (Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_16BE,
+--        Ada.Strings.UTF_Encoding.UTF_16LE);
+   To_UTF_Encoding : constant array (Encoding_Scheme) of STUTEN.Encoding_Scheme :=
+     (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE,
+      STUTEN.UTF_16LE);
 
    -- Memory management
 
@@ -387,8 +391,10 @@ package body UXStrings is
    is
    begin
       return
-        Ada.Strings.UTF_Encoding.Conversions.Convert
-          (Source.Chars.all, Ada.Strings.UTF_Encoding.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
+        --          Ada.Strings.UTF_Encoding.Conversions.Convert
+--            (Source.Chars.all, Ada.Strings.UTF_Encoding.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
+        STUTEN.SUEnco.Convert
+          (Source.Chars.all, STUTEN.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
    end To_UTF_16;
 
    -----------------
@@ -400,8 +406,10 @@ package body UXStrings is
       return UXS : UXString do
          UXS.Chars :=
            new UTF_8_Character_Array'
-             (Ada.Strings.UTF_Encoding.Conversions.Convert
-                (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
+         --               (Ada.Strings.UTF_Encoding.Conversions.Convert
+--                  (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
+         (STUTEN.SUEnco.Convert
+                (Source, To_UTF_Encoding (Input_Scheme), STUTEN.UTF_8));
       end return;
    end From_UTF_16;
 
