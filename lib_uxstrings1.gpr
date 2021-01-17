@@ -1,9 +1,10 @@
-project UXStrings1 is
-   for Languages use ("Ada");
-   for Source_Dirs use ("deps", "src", "tests", "fix");
-   for Object_Dir use "obj";
-   for Exec_Dir use "bin";
-   for Main use ("test_uxstrings.adb", "test_uxstrings_text_io.adb");
+library project Lib_UXStrings1 is
+
+   for Library_Kind use "static";
+   for Library_Name use "uxstrings";
+   for Source_Dirs use ("deps", "src", "fix");
+   for Object_Dir  use "obj";
+   for Library_Dir use "lib";
    for Create_Missing_Dirs use "True";
 
    package Naming is
@@ -24,11 +25,12 @@ project UXStrings1 is
       for Default_Switches ("Ada") use ("-Es");
    end Binder;
 
-   package Linker is
-      for Default_Switches ("ada") use ("-Wl,-no_pie");
-   end Linker;
+   package Install is
+      for Install_Name use "uxstrings";
+      for Artifacts ("share/doc/uxstrings_rm") use (Project'Object_Dir & "/gnatdoc/*");
+   end Install;
 
    package Pretty_Printer is
       for Default_Switches ("ada") use ("-M120", "-W8", "--comments-unchanged");
    end Pretty_Printer;
-end UXStrings1;
+end Lib_UXStrings1;
