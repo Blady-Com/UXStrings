@@ -2,6 +2,7 @@ with Ada.Strings;                use Ada.Strings;
 with Ada.Strings.Wide_Wide_Maps; use Ada.Strings.Wide_Wide_Maps;
 with Ada.Strings.UTF_Encoding;
 private with Ada.Finalization;
+private with Ada.Streams;
 
 package UXStrings is
 
@@ -169,6 +170,7 @@ package UXStrings is
    function "*" (Left : Natural; Right : Unicode_Character) return UXString;
 
 private
+
    type UTF_8_Characters_Access is access UTF_8_Character_Array;
    type UXString is new Ada.Finalization.Controlled with record
       Chars : UTF_8_Characters_Access := new UTF_8_Character_Array (2 .. 1);
@@ -177,5 +179,13 @@ private
    procedure Adjust (Object : in out UXString);
    procedure Finalize (Object : in out UXString);
 
+
+   procedure UXString_Read (Stream : not null access Ada.Streams.Root_Stream_Type'Class; Item : out UXString);
+   for UXString'Read use UXString_Read;
+
+   procedure UXString_Write (Stream : not null access Ada.Streams.Root_Stream_Type'Class; Item : UXString);
+   for UXString'Write use UXString_Write;
+
    Null_UXString : constant UXString := (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1));
+
 end UXStrings;

@@ -90,6 +90,27 @@ package body UXStrings is
       end if;
    end Finalize;
 
+   -- Stream management
+
+   -------------------
+   -- UXString_Read --
+   -------------------
+
+   procedure UXString_Read (Stream : not null access Ada.Streams.Root_Stream_Type'Class; Item : out UXString) is
+   begin
+      pragma Compile_Time_Warning (Standard.True, "UXString_Read unimplemented");
+      raise Program_Error with "Unimplemented procedure UXString_Read";
+   end UXString_Read;
+
+   --------------------
+   -- UXString_Write --
+   --------------------
+
+   procedure UXString_Write (Stream : not null access Ada.Streams.Root_Stream_Type'Class; Item : UXString) is
+   begin
+      UTF_8_Character_Array'Write (Stream, Item.Chars.all);
+   end UXString_Write;
+
    -- UXStrings API implementation
 
    ------------
