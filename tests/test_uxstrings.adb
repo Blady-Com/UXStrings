@@ -32,8 +32,8 @@ procedure Test_UXStrings is
 
 begin
    -- Change the default to LF and UTF-8
-   Ending (Current_Output, LF);
-   Line_Mark (LF);
+   Ending (Current_Output, LF_Ending);
+   Line_Mark (LF_Ending);
    Scheme (Current_Output, UTF_8);
 
    S1 := From_Latin_1 ("était blah blah");

@@ -10,16 +10,16 @@ package UXStrings.Text_IO is
    subtype Count is Natural range 0 .. Natural'Last;
    subtype Positive_Count is Count range 1 .. Count'Last;
 
-   type Line_Ending is (CR, LF, CRLF);
+   type Line_Ending is (CR_Ending, LF_Ending, CRLF_Ending);
 
    -- File Management
 
    procedure Create
      (File   : in out File_Type; Mode : in File_Mode := Out_File; Name : in UXString := Null_UXString;
-      Scheme : in     Encoding_Scheme := Latin_1; Ending : Line_Ending := CRLF);
+      Scheme : in     Encoding_Scheme := Latin_1; Ending : Line_Ending := CRLF_Ending);
    procedure Open
      (File   : in out File_Type; Mode : in File_Mode; Name : in UXString; Scheme : in Encoding_Scheme := Latin_1;
-      Ending :        Line_Ending := CRLF);
+      Ending :        Line_Ending := CRLF_Ending);
 
    procedure Close (File : in out File_Type);
    procedure Delete (File : in out File_Type);
@@ -132,13 +132,13 @@ package UXStrings.Text_IO is
    procedure Put (File : in File_Type; Item : in Unicode_Character);
    procedure Put (Item : in Unicode_Character);
 
-   procedure Look_Ahead (File : in File_Type; Item : out Unicode_Character; End_Of_Line : out Boolean);
+   procedure Look_Ahead (File : in out File_Type; Item : out Unicode_Character; End_Of_Line : out Boolean);
    procedure Look_Ahead (Item : out Unicode_Character; End_Of_Line : out Boolean);
 
-   procedure Get_Immediate (File : in File_Type; Item : out Unicode_Character);
+   procedure Get_Immediate (File : in out File_Type; Item : out Unicode_Character);
    procedure Get_Immediate (Item : out Unicode_Character);
 
-   procedure Get_Immediate (File : in File_Type; Item : out Unicode_Character; Available : out Boolean);
+   procedure Get_Immediate (File : in out File_Type; Item : out Unicode_Character; Available : out Boolean);
    procedure Get_Immediate (Item : out Unicode_Character; Available : out Boolean);
 
    -- Unicode String Input-Output
@@ -157,6 +157,19 @@ package UXStrings.Text_IO is
 
    procedure Put_Line (File : in File_Type; Item : in UXString);
    procedure Put_Line (Item : in UXString);
+
+   ----------------
+   -- Exceptions --
+   ----------------
+
+   Status_Error : exception;
+   Mode_Error   : exception;
+   Name_Error   : exception;
+   Use_Error    : exception;
+   Device_Error : exception;
+   End_Error    : exception;
+   Data_Error   : exception;
+   Layout_Error : exception;
 
 private
 

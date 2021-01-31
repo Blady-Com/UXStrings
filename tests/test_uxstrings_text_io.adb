@@ -34,10 +34,10 @@ procedure Test_UXStrings_Text_IO is
 
 begin
    -- Change the default to LF and UTF-8
-   Ending (Current_Output, LF);
-   Line_Mark (LF);
+   Ending (Current_Output, LF_Ending);
+   Line_Mark (LF_Ending);
    Scheme (Current_Output, UTF_8);
-   Ending (Current_Input, LF);
+   Ending (Current_Input, LF_Ending);
    Scheme (Current_Input, UTF_8);
    loop
       Put ("-->");
