@@ -113,6 +113,24 @@ package body UXStrings is
       UTF_8_Character_Array'Write (Stream, Item.Chars.all);
    end UXString_Write;
 
+   ------------------
+   -- Bounded_Move --
+   ------------------
+
+   procedure Bounded_Move (Source : in out UXString; Target : out UXString; Max : Natural; Last : out Natural) is
+      Item    : UTF8_Code_Point;
+      Pointer : Integer := Source.Chars'First;
+      Count   : Natural := 0;
+   begin
+      while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'last loop
+         Get (Source.Chars.all, Pointer, Item);
+         Count := Count + 1;
+      end loop;
+      Target := Source.Slice (1, Count);
+      Delete (Source, 1, Count);
+      Last := Target.Chars.all'Length;
+   end Bounded_Move;
+
    -- UXStrings API implementation
 
    ------------

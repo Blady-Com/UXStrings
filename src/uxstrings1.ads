@@ -179,6 +179,7 @@ private
    procedure Adjust (Object : in out UXString);
    procedure Finalize (Object : in out UXString);
 
+   procedure Bounded_Move (Source : in out UXString; Target : out UXString; Max : Natural; Last : out Natural);
 
    procedure UXString_Read (Stream : not null access Ada.Streams.Root_Stream_Type'Class; Item : out UXString);
    for UXString'Read use UXString_Read;
