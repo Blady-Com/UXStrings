@@ -12,3 +12,5 @@ licenses = "CECILL-2.1"
 
 project-files = ["lib_uxstrings1.gpr"]
 
+[[depends-on]]
+gnat = ">=2020"
