@@ -14,6 +14,7 @@ with Ada.Strings.Wide_Wide_Fixed; use Ada.Strings.Wide_Wide_Fixed;
 --  with Ada.Strings.UTF_Encoding.Conversions;
 with STUTEN.SUEnco; -- Fix an issue in UTF-16 to UTF8 conversion
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
+with Ada.Characters.Conversions;                 use Ada.Characters.Conversions;
 with Ada.Unchecked_Deallocation;
 with Strings_Edit.UTF8;                          use Strings_Edit.UTF8;
 with Strings_Edit.UTF8.Handling;                 use Strings_Edit.UTF8.Handling;
@@ -78,7 +79,7 @@ package body UXStrings is
 --       (Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_16BE,
 --        Ada.Strings.UTF_Encoding.UTF_16LE);
    To_UTF_Encoding : constant array (Encoding_Scheme) of STUTEN.Encoding_Scheme :=
-     (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE, STUTEN.UTF_16LE);
+     (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE, STUTEN.UTF_16LE);
 
    -- Memory management
 
@@ -140,10 +141,14 @@ package body UXStrings is
       Pointer : Integer := Source.Chars'First;
       Count   : Natural := 0;
    begin
-      while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'last loop
-         Get (Source.Chars.all, Pointer, Item);
-         Count := Count + 1;
-      end loop;
+      if Source.Full_ASCII then
+         Count := Natural'Min (Source.Chars'Length, Max);
+      else
+         while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'last loop
+            Get (Source.Chars.all, Pointer, Item);
+            Count := Count + 1;
+         end loop;
+      end if;
       Target := Source.Slice (1, Count);
       Delete (Source, 1, Count);
       Last := Target.Chars.all'Length;
@@ -157,7 +162,11 @@ package body UXStrings is
 
    function Length (Source : UXString) return Natural is
    begin
-      return Length (Source.Chars.all);
+      if Source.Full_ASCII then
+         return Source.Chars'Length;
+      else
+         return Length (Source.Chars.all);
+      end if;
    end Length;
 
    -----------
@@ -174,9 +183,7 @@ package body UXStrings is
    ----------
 
    function Next (Source : UXString; Index : Positive) return Positive is
-      Pointer : Integer := Source.Chars'First;
    begin
-      Skip (Source.Chars.all, Pointer, Index);
       return Index + 1;
    end Next;
 
@@ -219,7 +226,7 @@ package body UXStrings is
 
    function Is_ASCII (Source : UXString; Index : Positive) return Boolean is
    begin
-      if Source.Is_ASCII then
+      if Source.Full_ASCII then
          return True;
       else
          return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#80#;
@@ -232,7 +239,7 @@ package body UXStrings is
 
    function Is_ASCII (Source : UXString) return Boolean is
    begin
-      return Source.Is_ASCII;
+      return Source.Full_ASCII;
    end Is_ASCII;
 
    -----------------
@@ -245,7 +252,7 @@ package body UXStrings is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
    begin
-      if Source.Is_ASCII then
+      if Source.Full_ASCII then
          return Source.Chars (Index);
       else
          Skip (Source.Chars.all, Pointer, Index - 1);
@@ -264,7 +271,7 @@ package body UXStrings is
 
    function To_ASCII (Source : UXString; Substitute : in ASCII_Character := '?') return ASCII_Character_Array is
    begin
-      if Source.Is_ASCII then
+      if Source.Full_ASCII then
          return Source.Chars.all;
       else
          return To_ASCII (Source.Chars.all, Substitute);
@@ -278,8 +285,8 @@ package body UXStrings is
    function From_ASCII (Item : ASCII_Character) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars    := new UTF_8_Character_Array'((1 => Item));
-         UXS.Is_ASCII := True;
+         UXS.Chars      := new UTF_8_Character_Array'((1 => Item));
+         UXS.Full_ASCII := True;
       end return;
    end From_ASCII;
 
@@ -290,8 +297,8 @@ package body UXStrings is
    function From_ASCII (Source : ASCII_Character_Array) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars    := new UTF_8_Character_Array'(Source);
-         UXS.Is_ASCII := True;
+         UXS.Chars      := new UTF_8_Character_Array'(Source);
+         UXS.Full_ASCII := True;
       end return;
    end From_ASCII;
 
@@ -301,7 +308,7 @@ package body UXStrings is
 
    function Is_Latin_1 (Source : UXString; Index : Positive) return Boolean is
    begin
-      return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#1_00#;
+      return Source.Full_ASCII or else Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#1_00#;
    end Is_Latin_1;
 
    ----------------
@@ -310,7 +317,7 @@ package body UXStrings is
 
    function Is_Latin_1 (Source : UXString) return Boolean is
    begin
-      return (for all C of Source => Unicode_Character'Pos (C) < 16#1_00#);
+      return Source.Full_ASCII or else (for all C of Source => Unicode_Character'Pos (C) < 16#1_00#);
    end Is_Latin_1;
 
    -----------------
@@ -323,12 +330,16 @@ package body UXStrings is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
    begin
-      Skip (Source.Chars.all, Pointer, Index - 1);
-      Get (Source.Chars.all, Pointer, Item);
-      if Item > 16#FF# then
-         return Substitute;
+      if Source.Full_ASCII then
+         return Source.Chars (Index);
       else
-         return Latin_1_Character'val (Item);
+         Skip (Source.Chars.all, Pointer, Index - 1);
+         Get (Source.Chars.all, Pointer, Item);
+         if Item > 16#FF# then
+            return Substitute;
+         else
+            return Latin_1_Character'val (Item);
+         end if;
       end if;
    end Get_Latin_1;
 
@@ -338,7 +349,11 @@ package body UXStrings is
 
    function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := '¿') return Latin_1_Character_Array is
    begin
-      return To_String (Source.Chars.all, Substitute);
+      if Source.Full_ASCII then
+         return Source.Chars.all;
+      else
+         return To_String (Source.Chars.all, Substitute);
+      end if;
    end To_Latin_1;
 
    ------------------
@@ -348,7 +363,8 @@ package body UXStrings is
    function From_Latin_1 (Item : Latin_1_Character) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Item));
+         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Item));
+         UXS.Full_ASCII := Latin_1_Character'pos (Item) < 16#80#;
       end return;
    end From_Latin_1;
 
@@ -359,7 +375,8 @@ package body UXStrings is
    function From_Latin_1 (Source : Latin_1_Character_Array) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Source));
+         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Source));
+         UXS.Full_ASCII := (for all Item of Source => Latin_1_Character'pos (Item) < 16#80#);
       end return;
    end From_Latin_1;
 
@@ -369,7 +386,7 @@ package body UXStrings is
 
    function Is_BMP (Source : UXString; Index : Positive) return Boolean is
    begin
-      return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#1_0000#;
+      return Source.Full_ASCII or else Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#1_0000#;
    end Is_BMP;
 
    ------------
@@ -378,7 +395,7 @@ package body UXStrings is
 
    function Is_BMP (Source : UXString) return Boolean is
    begin
-      return (for all C of Source => Unicode_Character'Pos (C) < 16#1_0000#);
+      return Source.Full_ASCII or else (for all C of Source => Unicode_Character'Pos (C) < 16#1_0000#);
    end Is_BMP;
 
    -------------
@@ -389,12 +406,16 @@ package body UXStrings is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
    begin
-      Skip (Source.Chars.all, Pointer, Index - 1);
-      Get (Source.Chars.all, Pointer, Item);
-      if Item > 16#FFFF# then
-         return Substitute;
+      if Source.Full_ASCII then
+         return To_Wide_Character (Source.Chars (Index));
       else
-         return BMP_Character'val (Item);
+         Skip (Source.Chars.all, Pointer, Index - 1);
+         Get (Source.Chars.all, Pointer, Item);
+         if Item > 16#FFFF# then
+            return Substitute;
+         else
+            return BMP_Character'val (Item);
+         end if;
       end if;
    end Get_BMP;
 
@@ -404,7 +425,11 @@ package body UXStrings is
 
    function To_BMP (Source : UXString; Substitute : in BMP_Character := '¿') return BMP_Character_Array is
    begin
-      return To_Wide_String (Source.Chars.all, Substitute);
+      if Source.Full_ASCII then
+         return Ada.Characters.Conversions.To_Wide_String (Source.Chars.all);
+      else
+         return To_Wide_String (Source.Chars.all, Substitute);
+      end if;
    end To_BMP;
 
    --------------
@@ -414,7 +439,8 @@ package body UXStrings is
    function From_BMP (Item : BMP_Character) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Item));
+         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Item));
+         UXS.Full_ASCII := BMP_Character'pos (Item) < 16#80#;
       end return;
    end From_BMP;
 
@@ -425,7 +451,8 @@ package body UXStrings is
    function From_BMP (Source : BMP_Character_Array) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Source));
+         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Source));
+         UXS.Full_ASCII := (for all Item of Source => BMP_Character'pos (Item) < 16#80#);
       end return;
    end From_BMP;
 
@@ -455,9 +482,13 @@ package body UXStrings is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
    begin
-      Skip (Source.Chars.all, Pointer, Index - 1);
-      Get (Source.Chars.all, Pointer, Item);
-      return Unicode_Character'Val (Item);
+      if Source.Full_ASCII then
+         return To_Wide_Wide_Character (Source.Chars (Index));
+      else
+         Skip (Source.Chars.all, Pointer, Index - 1);
+         Get (Source.Chars.all, Pointer, Item);
+         return Unicode_Character'Val (Item);
+      end if;
    end Get_Unicode;
 
    ----------------
@@ -466,7 +497,11 @@ package body UXStrings is
 
    function To_Unicode (Source : UXString) return Unicode_Character_Array is
    begin
-      return To_Wide_Wide_String (Source.Chars.all);
+      if Source.Full_ASCII then
+         return Ada.Characters.Conversions.To_Wide_Wide_String (Source.Chars.all);
+      else
+         return To_Wide_Wide_String (Source.Chars.all);
+      end if;
    end To_Unicode;
 
    ------------------
@@ -476,7 +511,8 @@ package body UXStrings is
    function From_Unicode (Item : Unicode_Character) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Item));
+         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Item));
+         UXS.Full_ASCII := Unicode_Character'pos (Item) < 16#80#;
       end return;
    end From_Unicode;
 
@@ -487,7 +523,8 @@ package body UXStrings is
    function From_Unicode (Source : Unicode_Character_Array) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Source));
+         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Source));
+         UXS.Full_ASCII := (for all Item of Source => Unicode_Character'pos (Item) < 16#80#);
       end return;
    end From_Unicode;
 
@@ -511,7 +548,8 @@ package body UXStrings is
    function From_UTF_8 (Source : UTF_8_Character_Array) return UXString is
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Source);
+         UXS.Chars      := new UTF_8_Character_Array'(Source);
+         UXS.Full_ASCII := (for all Item of Source => Character'pos (Item) < 16#80#);
       end return;
    end From_UTF_8;
 
@@ -542,6 +580,7 @@ package body UXStrings is
          --               (Ada.Strings.UTF_Encoding.Conversions.Convert
 --                  (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
          (STUTEN.SUEnco.Convert (Source, To_UTF_Encoding (Input_Scheme), STUTEN.UTF_8));
+         UXS.Full_ASCII := (for all Item of Source => Character'pos (Item) < 16#80#);
       end return;
    end From_UTF_16;
 

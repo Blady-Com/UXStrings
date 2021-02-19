@@ -6,14 +6,15 @@ private with Ada.Streams;
 
 package UXStrings is
 
-   type Encoding_Scheme is (ASCII, Latin_1, UTF_8, UTF_16BE, UTF_16LE);
+   type Encoding_Scheme is (ASCII_7, Latin_1, UTF_8, UTF_16BE, UTF_16LE);
    -- Supported encoding schemes
    subtype UTF_16_Encoding_Scheme is Encoding_Scheme range UTF_16BE .. UTF_16LE;
    -- Supported UTF-16 encoding schemes
 
    subtype ASCII_Character is Character range Character'Val (0) .. Character'Val (127);
-   subtype ASCII_Character_Array is String;
-   -- ISO 646
+   subtype ASCII_Character_Array is String with
+        Dynamic_Predicate => (for all Item of ASCII_Character_Array => Item in ASCII_Character);
+   -- ISO/IEC 646
 
    subtype Latin_1_Character is Character;
    subtype Latin_1_Character_Array is String;
@@ -291,8 +292,8 @@ private
 
    type UTF_8_Characters_Access is access UTF_8_Character_Array;
    type UXString is new Ada.Finalization.Controlled with record
-      Chars    : UTF_8_Characters_Access := new UTF_8_Character_Array (2 .. 1);
-      Is_ASCII : Boolean                 := False;
+      Chars      : UTF_8_Characters_Access := new UTF_8_Character_Array (2 .. 1);
+      Full_ASCII : Boolean                 := False;
    end record;
 
    procedure Adjust (Object : in out UXString);
@@ -307,6 +308,6 @@ private
    for UXString'Write use UXString_Write;
 
    Null_UXString : constant UXString :=
-     (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1), Is_ASCII => True);
+     (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1), Full_ASCII => True);
 
 end UXStrings;
