@@ -101,7 +101,8 @@ package UXStrings is
    function To_UTF_8 (Source : UXString; Output_BOM : Boolean := False) return UTF_8_Character_Array;
    -- Return an array of UTF-8 characters from Source, prepend UTF-8 BOM if Output_BOM is set to True
    function From_UTF_8 (Source : UTF_8_Character_Array) return UXString;
-   -- Return an UXString from the array of UTF-8 characters parameter Source
+   -- Return an UXString from the array of UTF-8 characters parameter Source,
+   -- leading BOM characters are suppressed if any
 
    function To_UTF_16
      (Source : UXString; Output_Scheme : UTF_16_Encoding_Scheme; Output_BOM : Boolean := False)
@@ -113,7 +114,7 @@ package UXStrings is
    -- according to the encoding scheme specified by Input_Scheme,
    -- leading BOM characters are suppressed if any
 
-   procedure Set (Target : out UXString; Unicode_Source : Unicode_Character_Array);
+   procedure Set (Target : out UXString; Source : Unicode_Character_Array);
    -- Set Target to an UXString from the array of Unicode characters parameter Source
 
    procedure Append (Source : in out UXString; New_Item : UXString);

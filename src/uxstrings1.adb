@@ -27,7 +27,7 @@ package body UXStrings is
       Pointer : Integer := Result'First;
    begin
       Put (Result, Pointer, UTF8_Code_Point (Wide_Wide_Character'Pos (Value)));
-      return Result (1 .. Pointer - 1);
+      return Result (Result'First .. Pointer - 1);
    end To_UTF8;
 
    function To_UTF8 (Value : Wide_Wide_String) return String is
@@ -51,7 +51,7 @@ package body UXStrings is
          Result (To) := Wide_Wide_Character'Val (Code);
          To          := To + 1;
       end loop;
-      return Result (1 .. To - 1);
+      return Result (Result'First .. To - 1);
    end To_Wide_Wide_String;
 
    -- Encoding Scheme cross correspondance
@@ -156,9 +156,7 @@ package body UXStrings is
    ----------
 
    function Next (Source : UXString; Index : Positive) return Positive is
-      Pointer : Integer := Source.Chars'First;
    begin
-      Skip (Source.Chars.all, Pointer, Index);
       return Index + 1;
    end Next;
 
@@ -228,7 +226,7 @@ package body UXStrings is
       if Item > 16#FF# then
          return Substitute;
       else
-         return Latin_1_Character'val (Item);
+         return Latin_1_Character'Val (Item);
       end if;
    end Get_Latin_1;
 
@@ -294,7 +292,7 @@ package body UXStrings is
       if Item > 16#FFFF# then
          return Substitute;
       else
-         return BMP_Character'val (Item);
+         return BMP_Character'Val (Item);
       end if;
    end Get_BMP;
 
@@ -409,9 +407,11 @@ package body UXStrings is
    ----------------
 
    function From_UTF_8 (Source : UTF_8_Character_Array) return UXString is
+      Start : constant Natural :=
+        (if Index (Source, STUTEN.BOM_8) = Source'First then Source'First + STUTEN.BOM_8'Length else Source'first);
    begin
       return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Source);
+         UXS.Chars := new UTF_8_Character_Array'(Source (Start .. Source'Last));
       end return;
    end From_UTF_8;
 
@@ -449,9 +449,9 @@ package body UXStrings is
    -- Set --
    ---------
 
-   procedure Set (Target : out UXString; Unicode_Source : Unicode_Character_Array) is
+   procedure Set (Target : out UXString; Source : Unicode_Character_Array) is
    begin
-      Target := From_Unicode (Unicode_Source);
+      Target := From_Unicode (Source);
    end Set;
 
    ------------
@@ -579,7 +579,7 @@ package body UXStrings is
          Pointer2 := Pointer1;
          Skip (Source.Chars.all, Pointer2, High - Low + 1);
          return UXS : UXString do
-            UXS.Chars := new UTF_8_Character_Array'(Source.Chars.all (Pointer1 .. Pointer2 - 1));
+            UXS.Chars := new UTF_8_Character_Array'(Source.Chars (Pointer1 .. Pointer2 - 1));
          end return;
       else
          return Null_UXString;
@@ -878,7 +878,9 @@ package body UXStrings is
 
    function Overwrite (Source : UXString; Position : Positive; New_Item : UXString) return UXString is
    begin
-      return Replace_Slice (Source, Position, Natural'min (Source.Length, New_Item.Length), New_Item);
+      return
+        Replace_Slice
+          (Source, Position, Position + Natural'min (Source.Length - Position + 1, New_Item.Length) - 1, New_Item);
    end Overwrite;
 
    ---------------
