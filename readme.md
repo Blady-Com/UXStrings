@@ -1,5 +1,7 @@
 # Unicode Extended Strings (UXStrings)
 
+[![Alire](https://img.shields.io/endpoint?url=https://alire.ada.dev/badges/uxstrings.json)](https://alire.ada.dev/crates/uxstrings.html)
+
 ## Motivation
 
 Ada GUI library [Gnoga](https://sourceforge.net/projects/gnoga) internal character strings implementation is based on both Ada types String and Unbounded\_String.
@@ -110,8 +112,16 @@ Here are some ideas:
 
 One test program [test\_uxstrings.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings.adb) is provided for UXStrings tests and an other test program [test\_uxstrings\_text\_io.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings_text_io.adb) is provided for UXStrings.Text\_IO tests.
 
+## Using Alire
+
+In your [Alire](https://alire.ada.dev) project, add UXStrings dependency:
+
+`% alr with uxstrings`
+
+Thus you can import the UXStrings package in your programs.
+
 ## Feedbacks
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, November 2020.
+Pascal Pignard, March 2021.
