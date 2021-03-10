@@ -99,6 +99,23 @@ This implementation which is only for demonstrate the possible usages of UXStrin
 - single character assignment is not implemented
 - only few API are implemented
 
+### UXStrings 2
+
+A second POC implementation is provided. The source code files are ending with the number 2 as for instance "uxstrings2.ads". A GNAT project file "uxstrings2.gpr" is provided with some naming conventions for both packages UXStrings  and UXStrings.Text\_IO.
+
+#### Implementation choices
+
+In addition to implementation UXStrings 1, some API have been added to support ASCII 7 bits encoding. ASCII is a subset of UTF-8 thus no change with the internal representation.
+However, the API are now aware if content is full ASCII. On one hand, this permits to access directly to the position of one character without iterating on UTF-8 characters. Thus this is a time improvement when content is full ASCII. On the other hand, when content is changing the API check if the content is full ASCII. Thus this is a time penalty when changes are not full ASCII.
+
+This implementation which is only for demonstrate the possible usages of UXString has many limitations.
+
+#### Limitations:
+
+- not thread safe
+- single character assignment is not implemented
+- only few API are implemented
+
 ### Future implementations
 
 Here are some ideas:
