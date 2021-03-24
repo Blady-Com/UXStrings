@@ -7,6 +7,43 @@ library project Lib_UXStrings1 is
    for Library_Dir use "lib";
    for Create_Missing_Dirs use "True";
 
+DEPS := (
+        "strings_edit-integer_edit.adb",
+        "strings_edit-integer_edit.ads",
+        "strings_edit-integers.ads",
+        "strings_edit-text_edit.adb",
+        "strings_edit-utf8-handling.adb",
+        "strings_edit-utf8-handling.ads",
+        "strings_edit-utf8.adb",
+        "strings_edit-utf8.ads",
+        "strings_edit.adb",
+        "strings_edit.ads"
+        );
+
+FIX := (
+        "stuten-suenco.adb",
+        "stuten-suenco.ads",
+        "stuten.adb",
+        "stuten.ads"
+        );
+
+SRC := (
+        "uxstrings-conversions.adb",
+        "uxstrings-conversions.ads",
+        "uxstrings-formatting.adb",
+        "uxstrings-formatting.ads",
+        "uxstrings-hash.adb",
+        "uxstrings-hash.ads",
+        "uxstrings-text_io-text_streams.adb",
+        "uxstrings-text_io-text_streams.ads",
+        "uxstrings-text_io1.adb",
+        "uxstrings-text_io1.ads",
+        "uxstrings1.adb",
+        "uxstrings1.ads"
+        );
+
+   for Source_Files use DEPS & FIX & SRC;
+
    package Naming is
       for Spec ("UXStrings") use "uxstrings1.ads";
       for Body ("UXStrings") use "uxstrings1.adb";
