@@ -15,6 +15,9 @@ with Ada.Strings.Wide_Wide_Fixed; use Ada.Strings.Wide_Wide_Fixed;
 with STUTEN.SUEnco; -- Fix an issue in UTF-16 to UTF8 conversion
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 with Ada.Unchecked_Deallocation;
+with Ada.Wide_Wide_Characters.Handling;          use Ada.Wide_Wide_Characters.Handling;
+with Ada.Wide_Characters.Handling;
+with GNAT.UTF_32;
 with Strings_Edit.UTF8;                          use Strings_Edit.UTF8;
 with Strings_Edit.UTF8.Handling;                 use Strings_Edit.UTF8.Handling;
 
@@ -54,13 +57,31 @@ package body UXStrings is
       return Result (Result'First .. To - 1);
    end To_Wide_Wide_String;
 
+   function To_ASCII (Value : String; Substitute : Character) return String is
+      Result  : String (1 .. Value'Length);
+      Pointer : Integer := Value'First;
+      Index   : Integer := Result'First;
+      Item    : UTF8_Code_Point;
+   begin
+      while Pointer <= Value'Last loop
+         Get (Value, Pointer, Item);
+         if Item > 16#7F# then
+            Result (Index) := Substitute;
+         else
+            Result (Index) := Character'Val (Item);
+         end if;
+         Index := Index + 1;
+      end loop;
+      return Result (Result'First .. Index - 1);
+   end To_ASCII;
+
    -- Encoding Scheme cross correspondance
 
 --     To_UTF_Encoding : constant array (Encoding_Scheme) of Ada.Strings.UTF_Encoding.Encoding_Scheme :=
 --       (Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_16BE,
 --        Ada.Strings.UTF_Encoding.UTF_16LE);
    To_UTF_Encoding : constant array (Encoding_Scheme) of STUTEN.Encoding_Scheme :=
-     (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE, STUTEN.UTF_16LE);
+     (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE, STUTEN.UTF_16LE);
 
    -- Memory management
 
@@ -192,6 +213,83 @@ package body UXStrings is
    begin
       return Length (Source);
    end Last;
+
+   ---------------------------
+   -- Character_Set_Version --
+   ---------------------------
+
+   function Character_Set_Version return UXString is
+   begin
+      return From_ASCII (Ada.Wide_Characters.Handling.Character_Set_Version);
+   end Character_Set_Version;
+
+   --------------
+   -- Is_ASCII --
+   --------------
+
+   function Is_ASCII (Source : UXString; Index : Positive) return Boolean is
+   begin
+      return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#80#;
+   end Is_ASCII;
+
+   --------------
+   -- Is_ASCII --
+   --------------
+
+   function Is_ASCII (Source : UXString) return Boolean is
+   begin
+      return (for all Item of Source.Chars.all => Item in ASCII_Character);
+   end Is_ASCII;
+
+   ---------------
+   -- Get_ASCII --
+   ---------------
+
+   function Get_ASCII
+     (Source : UXString; Index : Positive; Substitute : in ASCII_Character := '?') return ASCII_Character
+   is
+      Item    : UTF8_Code_Point;
+      Pointer : Integer := Source.Chars'First;
+   begin
+      Skip (Source.Chars.all, Pointer, Index - 1);
+      Get (Source.Chars.all, Pointer, Item);
+      if Item > 16#7F# then
+         return Substitute;
+      else
+         return ASCII_Character'Val (Item);
+      end if;
+   end Get_ASCII;
+
+   --------------
+   -- To_ASCII --
+   --------------
+
+   function To_ASCII (Source : UXString; Substitute : in ASCII_Character := '?') return ASCII_Character_Array is
+   begin
+      return To_ASCII (Source.Chars.all, Substitute);
+   end To_ASCII;
+
+   ----------------
+   -- From_ASCII --
+   ----------------
+
+   function From_ASCII (Item : ASCII_Character) return UXString is
+   begin
+      return UXS : UXString do
+         UXS.Chars := new UTF_8_Character_Array'((1 => Item));
+      end return;
+   end From_ASCII;
+
+   ----------------
+   -- From_ASCII --
+   ----------------
+
+   function From_ASCII (Source : ASCII_Character_Array) return UXString is
+   begin
+      return UXS : UXString do
+         UXS.Chars := new UTF_8_Character_Array'(Source);
+      end return;
+   end From_ASCII;
 
    ----------------
    -- Is_Latin_1 --
@@ -1021,5 +1119,68 @@ package body UXStrings is
          UXS.Chars := new UTF_8_Character_Array'(Left * (To_UTF8 (Right)));
       end return;
    end "*";
+
+   ----------------------------
+   -- Equal_Case_Insensitive --
+   ----------------------------
+
+   function Equal_Case_Insensitive (Left, Right : UXString) return Boolean is
+   begin
+      return To_Lower (Left) = To_Lower (Right);
+   end Equal_Case_Insensitive;
+
+   ---------------------------
+   -- Less_Case_Insensitive --
+   ---------------------------
+
+   function Less_Case_Insensitive (Left, Right : UXString) return Boolean is
+   begin
+      return To_Lower (Left) < To_Lower (Right);
+   end Less_Case_Insensitive;
+
+   --------------
+   -- To_Lower --
+   --------------
+
+   function To_Lower (Item : UXString) return UXString is
+   begin
+      return UXS : UXString do
+         UXS.Chars := new UTF_8_Character_Array'(Encode (To_Lower (Decode (Item.Chars.all))));
+      end return;
+   end To_Lower;
+
+   --------------
+   -- To_Upper --
+   --------------
+
+   function To_Upper (Item : UXString) return UXString is
+   begin
+      return UXS : UXString do
+         UXS.Chars := new UTF_8_Character_Array'(Encode (To_Upper (Decode (Item.Chars.all))));
+      end return;
+   end To_Upper;
+
+   --------------
+   -- To_Basic --
+   --------------
+
+   function To_Basic (Item : Wide_Wide_Character) return Wide_Wide_Character is
+     (Wide_Wide_Character'Val (GNAT.UTF_32.UTF_32_To_Basic (Wide_Wide_Character'Pos (Item))));
+
+   function To_Basic (Item : Wide_Wide_String) return Wide_Wide_String is
+      Result : Wide_Wide_String (Item'Range);
+   begin
+      for J in Result'Range loop
+         Result (J) := To_Basic (Item (J));
+      end loop;
+      return Result;
+   end To_Basic;
+
+   function To_Basic (Item : UXString) return UXString is
+   begin
+      return UXS : UXString do
+         UXS.Chars := new UTF_8_Character_Array'(Encode (To_Basic (Decode (Item.Chars.all))));
+      end return;
+   end To_Basic;
 
 end UXStrings;

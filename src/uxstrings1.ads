@@ -1,15 +1,21 @@
 with Ada.Strings;                use Ada.Strings;
 with Ada.Strings.Wide_Wide_Maps; use Ada.Strings.Wide_Wide_Maps;
 with Ada.Strings.UTF_Encoding;
+with Ada.Characters.Handling;
 private with Ada.Finalization;
 private with Ada.Streams;
 
 package UXStrings is
 
-   type Encoding_Scheme is (Latin_1, UTF_8, UTF_16BE, UTF_16LE);
+   type Encoding_Scheme is (ASCII_7, Latin_1, UTF_8, UTF_16BE, UTF_16LE);
    -- Supported encoding schemes
    subtype UTF_16_Encoding_Scheme is Encoding_Scheme range UTF_16BE .. UTF_16LE;
    -- Supported UTF-16 encoding schemes
+
+   subtype ASCII_Character is Ada.Characters.Handling.ISO_646;
+   subtype ASCII_Character_Array is String with
+        Dynamic_Predicate => (for all Item of ASCII_Character_Array => Item in ASCII_Character);
+   -- ISO/IEC 646
 
    subtype Latin_1_Character is Character;
    subtype Latin_1_Character_Array is String;
@@ -53,6 +59,31 @@ package UXStrings is
    -- Return the Unicode character of Source at Index position
    function Last (Source : UXString) return Natural;
    -- Return the position of the last character of Source (actually Length (Source))
+
+   function Character_Set_Version return UXString;
+   -- Returns an implementation-defined identifier that identifies the version of the character set standard
+   -- that is used for categorizing characters by the implementation.
+
+   function Is_ASCII (Source : UXString; Index : Positive) return Boolean;
+   -- Return True if the character of Source at Index position is in ASCII set
+   function Is_ASCII (Source : UXString) return Boolean;
+   -- Return True if all the characters of Source are in ASCII set
+   function Get_ASCII
+     (Source : UXString; Index : Positive; Substitute : in ASCII_Character := '?') return ASCII_Character;
+   -- Return the ASCII character of Source at Index position,
+   -- if the character is not in ASCII set then Substitute is returned
+   function To_ASCII (Source : UXString; Substitute : in ASCII_Character := '?') return ASCII_Character_Array;
+   -- Return an array of ASCII characters from Source,
+   -- if a character is not in ASCII set then Substitute is returned
+   function From_ASCII (Item : ASCII_Character) return UXString;
+   -- Return an UXString from the ASCII character Item
+   function From_ASCII (Source : ASCII_Character_Array) return UXString;
+   -- Return an UXString from the array of ASCII characters Source
+
+   function Is_ISO_646 (Item : UXString) return Boolean renames Is_ASCII;
+   function To_ISO_646
+     (Item : UXString; Substitute : Ada.Characters.Handling.ISO_646 := ' ') return ASCII_Character_Array renames
+     To_ASCII;
 
    function Is_Latin_1 (Source : UXString; Index : Positive) return Boolean;
    -- Return True if the character of Source at Index position is in Latin 1 set
@@ -271,6 +302,30 @@ package UXStrings is
    -- Return Right string duplicated Left times
    function "*" (Left : Natural; Right : Unicode_Character) return UXString;
    -- Return Right character duplicated Left times
+
+   ----------------------------------------------
+   -- String Additional Comparison Subprograms --
+   ----------------------------------------------
+
+   function Equal_Case_Insensitive (Left, Right : UXString) return Boolean;
+   -- Returns True if the strings consist of the same sequence of characters after applying locale-independent
+   -- simple case folding, as defined by documents referenced in the note in Clause 1 of ISO/IEC 10646:2011.
+   -- Otherwise, returns False.
+   function Less_Case_Insensitive (Left, Right : UXString) return Boolean;
+   -- Performs a lexicographic comparison of strings Left and Right, converted to lower case.
+
+   -----------------------------------
+   -- String Conversion Subprograms --
+   -----------------------------------
+
+   function To_Lower (Item : UXString) return UXString;
+   -- Returns the corresponding lower-case value for Item if Is_Upper(Item), and returns Item otherwise.
+   function To_Upper (Item : UXString) return UXString;
+   -- Returns the corresponding upper-case value for Item if Is_Lower(Item) and Item has an upper-case form,
+   -- and returns Item otherwise. The lower case letters 'ß' and 'ÿ' do not have upper case forms.
+   function To_Basic (Item : UXString) return UXString;
+   -- Returns the letter corresponding to Item but with no diacritical mark,
+   -- if Item is a letter but not a basic letter; returns Item otherwise.
 
 private
 

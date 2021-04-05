@@ -34,6 +34,8 @@ SRC := (
         "uxstrings-formatting.ads",
         "uxstrings-hash.adb",
         "uxstrings-hash.ads",
+        "uxstrings-hash_case_insensitive.adb",
+        "uxstrings-hash_case_insensitive.ads",
         "uxstrings-text_io-text_streams.adb",
         "uxstrings-text_io-text_streams.ads",
         "uxstrings-text_io1.adb",
