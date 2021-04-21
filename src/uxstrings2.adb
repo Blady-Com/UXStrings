@@ -5,7 +5,7 @@
 -- NOTES                        : Ada 202x
 --
 -- COPYRIGHT                    : (c) Pascal Pignard 2021
--- LICENCE                      : CeCILL V2.1 (https://www.cecill.info)
+-- LICENCE                      : CeCILL V2.1 (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
 
@@ -712,6 +712,19 @@ package body UXStrings is
          UXS.Full_ASCII := Unicode_Character'Pos (Left) < 16#80# and Right.Full_ASCII;
       end return;
    end "&";
+
+   -------------------
+   -- Replace_ASCII --
+   -------------------
+
+   procedure Replace_ASCII (Source : in out UXString; Index : Positive; By : ASCII_Character) is
+   begin
+      if Source.Full_ASCII then
+         Source.Chars (Source.Chars'First + Index - 1) := By;
+      else
+         Source := Slice (Source, 1, Index - 1) & From_ASCII (By) & Slice (Source, Index + 1, Length (Source));
+      end if;
+   end Replace_ASCII;
 
    ---------------------
    -- Replace_Latin_1 --

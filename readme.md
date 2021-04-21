@@ -84,7 +84,7 @@ Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 1
 
-A first POC implementation is provided. The source code files are ending with the number 1 as for instance "uxstrings1.ads". A GNAT project file "uxstrings1.gpr" is provided with some naming conventions for both packages UXStrings  and UXStrings.Text\_IO.
+A first proof of concept implementation is provided. The source code files are ending with the number 1 as for instance "uxstrings1.ads". A GNAT project file "uxstrings1.gpr" is provided with some naming conventions for both packages UXStrings  and UXStrings.Text\_IO.
 
 #### Implementation choices
 
@@ -101,7 +101,7 @@ This implementation which is only for demonstrate the possible usages of UXStrin
 
 ### UXStrings 2
 
-A second POC implementation is provided. The source code files are ending with the number 2 as for instance "uxstrings2.ads". A GNAT project file "uxstrings2.gpr" is provided with some naming conventions for both packages UXStrings  and UXStrings.Text\_IO.
+A second proof of concept implementation is provided. The source code files are ending with the number 2 as for instance "uxstrings2.ads". A GNAT project file "uxstrings2.gpr" is provided with some naming conventions for both packages UXStrings  and UXStrings.Text\_IO.
 
 #### Implementation choices
 
@@ -137,8 +137,14 @@ In your [Alire](https://alire.ada.dev) project, add UXStrings dependency:
 
 Thus you can import the UXStrings package in your programs.
 
+## Licence
+
+The provided UXStrings specifications are intend to be public.
+Constructive criticism and altenative implementations of these specifications are expected.
+The actual proposed implementation is under [CeCILL](https://cecill.info) licence.
+
 ## Feedbacks
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, March 2021.
+Pascal Pignard, April 2021.
