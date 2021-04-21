@@ -333,7 +333,8 @@ private
 
    type UTF_8_Characters_Access is access UTF_8_Character_Array;
    type UXString is new Ada.Finalization.Controlled with record
-      Chars : UTF_8_Characters_Access := new UTF_8_Character_Array (2 .. 1);
+      Chars     : UTF_8_Characters_Access := new UTF_8_Character_Array (2 .. 1);
+      Finalized : Boolean                 := False;
    end record;
 
    procedure Adjust (Object : in out UXString);
@@ -347,6 +348,7 @@ private
    procedure UXString_Write (Stream : not null access Ada.Streams.Root_Stream_Type'Class; Item : UXString);
    for UXString'Write use UXString_Write;
 
-   Null_UXString : constant UXString := (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1));
+   Null_UXString : constant UXString :=
+     (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array (2 .. 1), Finalized => False);
 
 end UXStrings;

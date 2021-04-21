@@ -109,7 +109,10 @@ package body UXStrings is
    procedure Finalize (Object : in out UXString) is
    begin
       if Object.Chars /= null then
-         Free (Object.Chars);
+         if Object.Finalized'Valid and then not Object.Finalized then
+            Free (Object.Chars);
+            Object.Finalized := True;
+         end if;
       end if;
    end Finalize;
 
