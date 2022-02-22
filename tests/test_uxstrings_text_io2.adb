@@ -60,7 +60,7 @@ procedure Test_UXStrings_Text_IO2 is
    S1 : UXString;
 
 begin
-   -- Change the default to LF and UTF-8
+   -- Change the default to LF and ASCII
    Ending (Current_Output, LF_Ending);
    Line_Mark (LF_Ending);
    Scheme (Current_Output, ASCII_7);

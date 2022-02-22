@@ -30,7 +30,7 @@ The programmer won't make any representation choice when for example receiving U
 ``` ada
    S2 : UXString;
    ...
-   S2 := "Received: " & From_UTF8 (Message);
+   S2 := "Received: " & From_UTF_8 (Message);
 ```
 
 Automatically S2 will adapt its inner representation to the received characters.

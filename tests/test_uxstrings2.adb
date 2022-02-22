@@ -31,7 +31,7 @@ procedure Test_UXStrings2 is
    --     Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
 
 begin
-   -- Change the default to LF and UTF-8
+   -- Change the default to LF and ASCII
    Ending (Current_Output, LF_Ending);
    Line_Mark (LF_Ending);
    Scheme (Current_Output, ASCII_7);
