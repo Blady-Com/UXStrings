@@ -4,15 +4,14 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 202x
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2021
+-- COPYRIGHT                    : (c) Pascal Pignard 2022
 -- LICENCE                      : CeCILL V2.1 (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Fixed;           use Ada.Strings.Fixed;
-with Ada.Strings.Wide_Wide_Fixed; use Ada.Strings.Wide_Wide_Fixed;
---  with Ada.Strings.UTF_Encoding.Conversions;
-with STUTEN.SUEnco; -- Fix an issue in UTF-16 to UTF8 conversion
+with Ada.Strings.Fixed;                          use Ada.Strings.Fixed;
+with Ada.Strings.Wide_Wide_Fixed;                use Ada.Strings.Wide_Wide_Fixed;
+with Ada.Strings.UTF_Encoding.Conversions;
 with Ada.Strings.UTF_Encoding.Strings;
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 with Ada.Characters.Conversions;                 use Ada.Characters.Conversions;
@@ -91,13 +90,6 @@ package body UXStrings is
       return Convert (Scheme);
    end To_UTF_Encoding;
 
-   function To_UTF_Encoding (Scheme : Encoding_Scheme) return STUTEN.Encoding_Scheme is
-      Convert : constant array (Encoding_Scheme) of STUTEN.Encoding_Scheme :=
-        (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE, STUTEN.UTF_16LE);
-   begin
-      return Convert (Scheme);
-   end To_UTF_Encoding;
-
    -- Memory management
 
    ----------
@@ -164,7 +156,7 @@ package body UXStrings is
       if Source.Full_ASCII then
          Count := Natural'Min (Source.Chars'Length, Max);
       else
-         while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'last loop
+         while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'Last loop
             Get (Source.Chars.all, Pointer, Item);
             Count := Count + 1;
          end loop;
@@ -572,7 +564,9 @@ package body UXStrings is
 
    function From_UTF_8 (Source : UTF_8_Character_Array) return UXString is
       Start : constant Natural :=
-        (if Index (Source, STUTEN.BOM_8) = Source'First then Source'First + STUTEN.BOM_8'Length else Source'first);
+        (if Index (Source, Ada.Strings.UTF_Encoding.BOM_8) = Source'First then
+           Source'First + Ada.Strings.UTF_Encoding.BOM_8'Length
+         else Source'First);
    begin
       return UXS : UXString do
          UXS.Chars      := new UTF_8_Character_Array'(Source (Start .. Source'Last));
@@ -593,9 +587,8 @@ package body UXStrings is
          return Ada.Strings.UTF_Encoding.Strings.Encode (Source.Chars.all, To_UTF_Encoding (Output_Scheme), Output_BOM);
       else
          return
-        --          Ada.Strings.UTF_Encoding.Conversions.Convert
---            (Source.Chars.all, Ada.Strings.UTF_Encoding.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
-         STUTEN.SUEnco.Convert (Source.Chars.all, STUTEN.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
+           Ada.Strings.UTF_Encoding.Conversions.Convert
+             (Source.Chars.all, Ada.Strings.UTF_Encoding.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
       end if;
    end To_UTF_16;
 
@@ -608,9 +601,8 @@ package body UXStrings is
       return UXS : UXString do
          UXS.Chars :=
            new UTF_8_Character_Array'
-         --               (Ada.Strings.UTF_Encoding.Conversions.Convert
---                  (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
-         (STUTEN.SUEnco.Convert (Source, To_UTF_Encoding (Input_Scheme), STUTEN.UTF_8));
+             (Ada.Strings.UTF_Encoding.Conversions.Convert
+                (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
          UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
       end return;
    end From_UTF_16;
@@ -1130,7 +1122,7 @@ package body UXStrings is
       else
          return
            Replace_Slice
-             (Source, Position, Position + Natural'min (Source.Length - Position + 1, New_Item.Length) - 1, New_Item);
+             (Source, Position, Position + Natural'Min (Source.Length - Position + 1, New_Item.Length) - 1, New_Item);
       end if;
    end Overwrite;
 
@@ -1268,7 +1260,7 @@ package body UXStrings is
          if Source.Full_ASCII then
             return UXS : UXString do
                UXS.Chars :=
-                 new UTF_8_Character_Array'(Source.Chars (Source.Chars'last - Count + 1 .. Source.Chars'Last));
+                 new UTF_8_Character_Array'(Source.Chars (Source.Chars'Last - Count + 1 .. Source.Chars'Last));
                UXS.Full_ASCII := True;
             end return;
          else

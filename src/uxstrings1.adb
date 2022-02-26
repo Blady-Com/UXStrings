@@ -4,15 +4,14 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 202x
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2021
+-- COPYRIGHT                    : (c) Pascal Pignard 2022
 -- LICENCE                      : CeCILL V2.1 (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Fixed;           use Ada.Strings.Fixed;
-with Ada.Strings.Wide_Wide_Fixed; use Ada.Strings.Wide_Wide_Fixed;
---  with Ada.Strings.UTF_Encoding.Conversions;
-with STUTEN.SUEnco; -- Fix an issue in UTF-16 to UTF8 conversion
+with Ada.Strings.Fixed;                          use Ada.Strings.Fixed;
+with Ada.Strings.Wide_Wide_Fixed;                use Ada.Strings.Wide_Wide_Fixed;
+with Ada.Strings.UTF_Encoding.Conversions;
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 with Ada.Unchecked_Deallocation;
 with Ada.Wide_Wide_Characters.Handling;          use Ada.Wide_Wide_Characters.Handling;
@@ -77,11 +76,9 @@ package body UXStrings is
 
    -- Encoding Scheme cross correspondance
 
---     To_UTF_Encoding : constant array (Encoding_Scheme) of Ada.Strings.UTF_Encoding.Encoding_Scheme :=
---       (Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_16BE,
---        Ada.Strings.UTF_Encoding.UTF_16LE);
-   To_UTF_Encoding : constant array (Encoding_Scheme) of STUTEN.Encoding_Scheme :=
-     (STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_8, STUTEN.UTF_16BE, STUTEN.UTF_16LE);
+   To_UTF_Encoding : constant array (Encoding_Scheme) of Ada.Strings.UTF_Encoding.Encoding_Scheme :=
+     (Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8, Ada.Strings.UTF_Encoding.UTF_8,
+      Ada.Strings.UTF_Encoding.UTF_16BE, Ada.Strings.UTF_Encoding.UTF_16LE);
 
    -- Memory management
 
@@ -146,7 +143,7 @@ package body UXStrings is
       Pointer : Integer := Source.Chars'First;
       Count   : Natural := 0;
    begin
-      while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'last loop
+      while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'Last loop
          Get (Source.Chars.all, Pointer, Item);
          Count := Count + 1;
       end loop;
@@ -509,7 +506,9 @@ package body UXStrings is
 
    function From_UTF_8 (Source : UTF_8_Character_Array) return UXString is
       Start : constant Natural :=
-        (if Index (Source, STUTEN.BOM_8) = Source'First then Source'First + STUTEN.BOM_8'Length else Source'first);
+        (if Index (Source, Ada.Strings.UTF_Encoding.BOM_8) = Source'First then
+           Source'First + Ada.Strings.UTF_Encoding.BOM_8'Length
+         else Source'First);
    begin
       return UXS : UXString do
          UXS.Chars := new UTF_8_Character_Array'(Source (Start .. Source'Last));
@@ -526,9 +525,8 @@ package body UXStrings is
    is
    begin
       return
-        --          Ada.Strings.UTF_Encoding.Conversions.Convert
---            (Source.Chars.all, Ada.Strings.UTF_Encoding.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
-      STUTEN.SUEnco.Convert (Source.Chars.all, STUTEN.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
+        Ada.Strings.UTF_Encoding.Conversions.Convert
+          (Source.Chars.all, Ada.Strings.UTF_Encoding.UTF_8, To_UTF_Encoding (Output_Scheme), Output_BOM);
    end To_UTF_16;
 
    -----------------
@@ -540,9 +538,8 @@ package body UXStrings is
       return UXS : UXString do
          UXS.Chars :=
            new UTF_8_Character_Array'
-         --               (Ada.Strings.UTF_Encoding.Conversions.Convert
---                  (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
-         (STUTEN.SUEnco.Convert (Source, To_UTF_Encoding (Input_Scheme), STUTEN.UTF_8));
+             (Ada.Strings.UTF_Encoding.Conversions.Convert
+                (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
       end return;
    end From_UTF_16;
 
@@ -990,7 +987,7 @@ package body UXStrings is
    begin
       return
         Replace_Slice
-          (Source, Position, Position + Natural'min (Source.Length - Position + 1, New_Item.Length) - 1, New_Item);
+          (Source, Position, Position + Natural'Min (Source.Length - Position + 1, New_Item.Length) - 1, New_Item);
    end Overwrite;
 
    ---------------

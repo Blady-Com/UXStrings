@@ -2,7 +2,7 @@ library project Lib_UXStrings1 is
 
    for Library_Kind use "static";
    for Library_Name use "uxstrings";
-   for Source_Dirs use ("deps", "src", "fix");
+   for Source_Dirs use ("deps", "src");
    for Object_Dir  use "obj";
    for Library_Dir use "lib";
    for Create_Missing_Dirs use "True";
@@ -18,13 +18,6 @@ DEPS := (
         "strings_edit-utf8.ads",
         "strings_edit.adb",
         "strings_edit.ads"
-        );
-
-FIX := (
-        "stuten-suenco.adb",
-        "stuten-suenco.ads",
-        "stuten.adb",
-        "stuten.ads"
         );
 
 SRC := (
@@ -44,7 +37,7 @@ SRC := (
         "uxstrings1.ads"
         );
 
-   for Source_Files use DEPS & FIX & SRC;
+   for Source_Files use DEPS & SRC;
 
    package Naming is
       for Spec ("UXStrings") use "uxstrings1.ads";
@@ -54,10 +47,10 @@ SRC := (
    end Naming;
 
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatW8", "-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y",
+      for Default_Switches ("ada") use ("-gnatW8", "-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y.N",
                                         "-fstack-check", "-g", "-gnato", "-gnata",
-                                        "-gnateE", "-gnateF", "-Wall",
-                                        "-gnatec=" & Project'Project_Dir & "pragma_debug.adc");
+                                        "-gnateE", "-gnateF", "-Wall");
+      for Local_Configuration_Pragmas use "pragma_debug.adc";
    end Compiler;
 
    package Binder is
