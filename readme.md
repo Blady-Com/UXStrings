@@ -129,13 +129,21 @@ Here are some ideas:
 
 One test program [test\_uxstrings.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings.adb) is provided for UXStrings tests and an other test program [test\_uxstrings\_text\_io.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings_text_io.adb) is provided for UXStrings.Text\_IO tests.
 
+## Dependencies
+
+UXStrings library depends on [Strings Edit](http://www.dmitry-kazakov.de/ada/strings_edit.htm) library.
+This latter is also part of [Simple Components](http://www.dmitry-kazakov.de/ada/components.htm) framework available on Alire.
+Get one of these and add the path of strings\_edit.gpr in your GPR\_PROJECT_PATH before building with UXStrings.
+
 ## Using Alire
 
-In your [Alire](https://alire.ada.dev) project, add UXStrings dependency:
+In your own [Alire](https://alire.ada.dev) project, add UXStrings dependency:
 
 `% alr with uxstrings`
 
-Thus you can import the UXStrings package in your programs.
+Then you can import the Ada UXStrings packages in your programs.
+
+Note: Alire will take care of dependencies.
 
 ## Licence
 
@@ -147,4 +155,4 @@ The actual proposed implementation is under [CeCILL](https://cecill.info) licenc
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, April 2021.
+Pascal Pignard, April 2021, August 2022.

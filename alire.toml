@@ -1,6 +1,6 @@
 name = "uxstrings"
 description = "Unicode Extended Strings utilities"
-version = "0.3.0+alpha-20220727"
+version = "0.4.0+alpha-20220803"
 tags = ["unicode", "dynamic", "string"]
 
 authors = ["Pascal Pignard"]
@@ -13,4 +13,5 @@ licenses = "CECILL-2.1"
 project-files = ["lib_uxstrings1.gpr"]
 
 [[depends-on]]
-gnat = ">=2021 | (>=11.2 & <2000)"
+gnat = ">=2021 | (>=12 & <2000)"
+simple_components = "^4.62.0"
