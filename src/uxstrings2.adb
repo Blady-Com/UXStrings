@@ -4,7 +4,7 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 202x
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2022
+-- COPYRIGHT                    : (c) Pascal Pignard 2023
 -- LICENCE                      : CeCILL V2.1 (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ package body UXStrings is
    ---------------
 
    function Get_ASCII
-     (Source : UXString; Index : Positive; Substitute : in ASCII_Character := '?') return ASCII_Character
+     (Source : UXString; Index : Positive; Substitute : in ASCII_Character := Q_L) return ASCII_Character
    is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
@@ -286,7 +286,7 @@ package body UXStrings is
    -- To_ASCII --
    --------------
 
-   function To_ASCII (Source : UXString; Substitute : in ASCII_Character := '?') return ASCII_Character_Array is
+   function To_ASCII (Source : UXString; Substitute : in ASCII_Character := Q_L) return ASCII_Character_Array is
    begin
       if Source.Full_ASCII then
          return Source.Chars.all;
@@ -342,7 +342,7 @@ package body UXStrings is
    -----------------
 
    function Get_Latin_1
-     (Source : UXString; Index : Positive; Substitute : in Latin_1_Character := '¿') return Latin_1_Character
+     (Source : UXString; Index : Positive; Substitute : in Latin_1_Character := Inv_Q_L) return Latin_1_Character
    is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
@@ -364,7 +364,7 @@ package body UXStrings is
    -- To_Latin_1 --
    ----------------
 
-   function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := '¿') return Latin_1_Character_Array is
+   function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := Inv_Q_L) return Latin_1_Character_Array is
    begin
       if Source.Full_ASCII then
          return Source.Chars.all;
@@ -419,7 +419,7 @@ package body UXStrings is
    -- Get_BMP --
    -------------
 
-   function Get_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := '¿') return BMP_Character is
+   function Get_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := Inv_Q_B) return BMP_Character is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
    begin
@@ -440,7 +440,7 @@ package body UXStrings is
    -- To_BMP --
    ------------
 
-   function To_BMP (Source : UXString; Substitute : in BMP_Character := '¿') return BMP_Character_Array is
+   function To_BMP (Source : UXString; Substitute : in BMP_Character := Inv_Q_B) return BMP_Character_Array is
    begin
       if Source.Full_ASCII then
          return Ada.Characters.Conversions.To_Wide_String (Source.Chars.all);
