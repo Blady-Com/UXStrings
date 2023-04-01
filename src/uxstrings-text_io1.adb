@@ -4,7 +4,7 @@
 -- ROLE                         : Text input / output implementation for UXString.
 -- NOTES                        : Ada 202x
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2021
+-- COPYRIGHT                    : (c) Pascal Pignard 2023
 -- LICENCE                      : CeCILL V2.1 (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ package body UXStrings.Text_IO is
       end if;
       Bounded_Move (File.Buffer, Read_Buffer, Item'Length, Last);
       if Last > 0 then
-         Item (Item'First .. Item'First + Last - 1) := Read_Buffer.Chars.all;
+         Item (Item'First .. Item'First + Last - 1) := To_UTF_8 (Read_Buffer);
       end if;
    end Read_Stream;
 

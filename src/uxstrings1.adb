@@ -229,7 +229,7 @@ package body UXStrings is
 
    function Is_ASCII (Source : UXString; Index : Positive) return Boolean is
    begin
-      return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#80#;
+      return Unicode_Character'Pos (Source (Index)) < 16#80#;
    end Is_ASCII;
 
    --------------
@@ -238,7 +238,7 @@ package body UXStrings is
 
    function Is_ASCII (Source : UXString) return Boolean is
    begin
-      return (for all Item of Source.Chars.all => Item in ASCII_Character);
+      return (for all Item of Source => Unicode_Character'Pos (Item) < 16#80#);
    end Is_ASCII;
 
    ---------------
@@ -297,7 +297,7 @@ package body UXStrings is
 
    function Is_Latin_1 (Source : UXString; Index : Positive) return Boolean is
    begin
-      return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#1_00#;
+      return Unicode_Character'Pos (Source (Index)) < 16#1_00#;
    end Is_Latin_1;
 
    ----------------
@@ -306,7 +306,7 @@ package body UXStrings is
 
    function Is_Latin_1 (Source : UXString) return Boolean is
    begin
-      return (for all C of Source => Unicode_Character'Pos (C) < 16#1_00#);
+      return (for all Item of Source => Unicode_Character'Pos (Item) < 16#1_00#);
    end Is_Latin_1;
 
    -----------------
@@ -365,7 +365,7 @@ package body UXStrings is
 
    function Is_BMP (Source : UXString; Index : Positive) return Boolean is
    begin
-      return Unicode_Character'Pos (Source.Get_Unicode (Index)) < 16#1_0000#;
+      return Unicode_Character'Pos (Source (Index)) < 16#1_0000#;
    end Is_BMP;
 
    ------------
@@ -374,7 +374,7 @@ package body UXStrings is
 
    function Is_BMP (Source : UXString) return Boolean is
    begin
-      return (for all C of Source => Unicode_Character'Pos (C) < 16#1_0000#);
+      return (for all Item of Source => Unicode_Character'Pos (Item) < 16#1_0000#);
    end Is_BMP;
 
    -------------
