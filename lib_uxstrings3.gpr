@@ -1,6 +1,4 @@
-with "/Users/blady/Documents/Programmation/Unicode_Extented_Strings/uxstrings/alire/cache/dependencies/simple_components_4.62.0_a5c16c1d/strings_edit.gpr";
-
---with "strings_edit.gpr";
+with "strings_edit.gpr";
 
 library project Lib_UXStrings3 is
 
