@@ -275,9 +275,7 @@ package body UXStrings is
 
    function From_ASCII (Item : ASCII_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'((1 => Item));
-      end return;
+      return From_UTF_8 ((1 => Item));
    end From_ASCII;
 
    ----------------
@@ -286,9 +284,7 @@ package body UXStrings is
 
    function From_ASCII (Source : ASCII_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Source);
-      end return;
+      return From_UTF_8 (Source);
    end From_ASCII;
 
    ----------------
@@ -332,7 +328,8 @@ package body UXStrings is
    -- To_Latin_1 --
    ----------------
 
-   function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := Inv_Q_L) return Latin_1_Character_Array is
+   function To_Latin_1 (Source : UXString; Substitute : in Latin_1_Character := Inv_Q_L) return Latin_1_Character_Array
+   is
    begin
       return To_String (Source.Chars.all, Substitute);
    end To_Latin_1;
@@ -343,9 +340,7 @@ package body UXStrings is
 
    function From_Latin_1 (Item : Latin_1_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Item));
-      end return;
+      return From_UTF_8 (To_UTF8 (Item));
    end From_Latin_1;
 
    ------------------
@@ -354,9 +349,7 @@ package body UXStrings is
 
    function From_Latin_1 (Source : Latin_1_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Source));
-      end return;
+      return From_UTF_8 (To_UTF8 (Source));
    end From_Latin_1;
 
    ------------
@@ -381,7 +374,8 @@ package body UXStrings is
    -- Get_BMP --
    -------------
 
-   function Get_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := Inv_Q_B) return BMP_Character is
+   function Get_BMP (Source : UXString; Index : Positive; Substitute : in BMP_Character := Inv_Q_B) return BMP_Character
+   is
       Item    : UTF8_Code_Point;
       Pointer : Integer := Source.Chars'First;
    begin
@@ -409,9 +403,7 @@ package body UXStrings is
 
    function From_BMP (Item : BMP_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Item));
-      end return;
+      return From_UTF_8 (To_UTF8 (Item));
    end From_BMP;
 
    --------------
@@ -420,9 +412,7 @@ package body UXStrings is
 
    function From_BMP (Source : BMP_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Source));
-      end return;
+      return From_UTF_8 (To_UTF8 (Source));
    end From_BMP;
 
    ----------------
@@ -471,9 +461,7 @@ package body UXStrings is
 
    function From_Unicode (Item : Unicode_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Item));
-      end return;
+      return From_UTF_8 (To_UTF8 (Item));
    end From_Unicode;
 
    ------------------
@@ -482,9 +470,7 @@ package body UXStrings is
 
    function From_Unicode (Source : Unicode_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Source));
-      end return;
+      return From_UTF_8 (To_UTF8 (Source));
    end From_Unicode;
 
    --------------
@@ -535,12 +521,10 @@ package body UXStrings is
 
    function From_UTF_16 (Source : UTF_16_Character_Array; Input_Scheme : UTF_16_Encoding_Scheme) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars :=
-           new UTF_8_Character_Array'
-             (Ada.Strings.UTF_Encoding.Conversions.Convert
-                (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
-      end return;
+      return
+        From_UTF_8
+          (Ada.Strings.UTF_Encoding.Conversions.Convert
+             (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
    end From_UTF_16;
 
    ---------
@@ -610,9 +594,7 @@ package body UXStrings is
 
    function "&" (Left : UXString; Right : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Left.Chars.all & Right.Chars.all);
-      end return;
+      return From_UTF_8 (Left.Chars.all & Right.Chars.all);
    end "&";
 
    ---------
@@ -621,9 +603,7 @@ package body UXStrings is
 
    function "&" (Left : UXString; Right : Unicode_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Left.Chars.all & To_UTF8 (Right));
-      end return;
+      return From_UTF_8 (Left.Chars.all & To_UTF8 (Right));
    end "&";
 
    ---------
@@ -632,9 +612,7 @@ package body UXStrings is
 
    function "&" (Left : Unicode_Character; Right : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(To_UTF8 (Left) & Right.Chars.all);
-      end return;
+      return From_UTF_8 (To_UTF8 (Left) & Right.Chars.all);
    end "&";
 
    -------------------
@@ -685,9 +663,7 @@ package body UXStrings is
          Skip (Source.Chars.all, Pointer1, Low - 1);
          Pointer2 := Pointer1;
          Skip (Source.Chars.all, Pointer2, High - Low + 1);
-         return UXS : UXString do
-            UXS.Chars := new UTF_8_Character_Array'(Source.Chars (Pointer1 .. Pointer2 - 1));
-         end return;
+         return From_UTF_8 (Source.Chars (Pointer1 .. Pointer2 - 1));
       else
          return Null_UXString;
       end if;
@@ -1065,9 +1041,7 @@ package body UXStrings is
       Len : constant Natural := Source.Length;
    begin
       if Count > Len then
-         return UXS : UXString do
-            UXS.Chars := new UTF_8_Character_Array'(Source.Chars.all & (Count - Len) * (To_UTF8 (Pad)));
-         end return;
+         return From_UTF_8 (Source.Chars.all & (Count - Len) * (To_UTF8 (Pad)));
       else
          return Source.Slice (Source.First, Count);
       end if;
@@ -1090,9 +1064,7 @@ package body UXStrings is
       Len : constant Natural := Source.Length;
    begin
       if Count > Len then
-         return UXS : UXString do
-            UXS.Chars := new UTF_8_Character_Array'(Source.Chars.all & (Count - Len) * (To_UTF8 (Pad)));
-         end return;
+         return From_UTF_8 (Source.Chars.all & (Count - Len) * (To_UTF8 (Pad)));
       else
          return Source.Slice (Len - Count + 1, Len);
       end if;
@@ -1113,9 +1085,7 @@ package body UXStrings is
 
    function "*" (Left : Natural; Right : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Left * Right.Chars.all);
-      end return;
+      return From_UTF_8 (Left * Right.Chars.all);
    end "*";
 
    ---------
@@ -1124,9 +1094,7 @@ package body UXStrings is
 
    function "*" (Left : Natural; Right : Unicode_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Left * (To_UTF8 (Right)));
-      end return;
+      return From_UTF_8 (Left * (To_UTF8 (Right)));
    end "*";
 
    ----------------------------
@@ -1153,9 +1121,7 @@ package body UXStrings is
 
    function To_Lower (Item : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Encode (To_Lower (Decode (Item.Chars.all))));
-      end return;
+      return From_UTF_8 (Encode (To_Lower (Decode (Item.Chars.all))));
    end To_Lower;
 
    --------------
@@ -1164,9 +1130,7 @@ package body UXStrings is
 
    function To_Upper (Item : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Encode (To_Upper (Decode (Item.Chars.all))));
-      end return;
+      return From_UTF_8 (Encode (To_Upper (Decode (Item.Chars.all))));
    end To_Upper;
 
    --------------
@@ -1187,9 +1151,7 @@ package body UXStrings is
 
    function To_Basic (Item : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Encode (To_Basic (Decode (Item.Chars.all))));
-      end return;
+      return From_UTF_8 (Encode (To_Basic (Decode (Item.Chars.all))));
    end To_Basic;
 
 end UXStrings;
