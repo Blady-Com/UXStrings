@@ -3,6 +3,7 @@ with UXStrings.Text_IO; use UXStrings.Text_IO;
 with UXStrings.Conversions;
 with UXStrings.Hash;
 with UXStrings.Formatting;
+with UXStrings.Lists;
 with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
 
 procedure Test_UXStrings is
@@ -30,6 +31,10 @@ procedure Test_UXStrings is
    F          : Boolean;
    D : constant array (Positive range <>) of Natural := (16#0075#, 16#003E#, 16#30E3#, 16#03A3#);
    --     Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
+
+   UXSL1 : constant UXStrings.Lists.UXString_List := ["Ada", "Strings", "Wide_Wide_Maps", "Wide_Wide_Constants", "Lower_Case_Map"];
+   S4 : constant UXString := "Ada.Strings.Wide_Wide_Maps.Is_Subset(Item, My_Set)";
+   S5 : constant UXString := "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/Current/lib/libpython3.9.dylib";
 
 begin
    -- Change the default to LF and UTF-8
@@ -111,6 +116,17 @@ begin
    Put_Line (S2.Remove ("ou"));
    Put_Line (S2.Remove ("fi", Insensitive) & '.');
    Put_Line (S2.Replace ("lou", "Coin", Insensitive));
+
+   for E of UXSL1 loop
+      Put_Line (E);
+   end loop;
+   for E of S4.Split(Ada.Strings.Wide_Wide_Maps.To_Set(".(,) ")).Sort loop
+      Put_Line (E);
+   end loop;
+   Put_Line (UXSL1.Join ('-').To_Lower);
+   for E of S5.Split('/').Filter ("py", Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map) loop
+      Put_Line (E);
+   end loop;
 
    Put_Line ("--end--");
 end Test_UXStrings;

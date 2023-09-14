@@ -18,6 +18,8 @@ SRC := (
         "uxstrings-hash.ads",
         "uxstrings-hash_case_insensitive.adb",
         "uxstrings-hash_case_insensitive.ads",
+        "uxstrings-lists.adb",
+        "uxstrings-lists.ads",
         "uxstrings-text_io-text_streams.adb",
         "uxstrings-text_io-text_streams.ads",
         "uxstrings-text_io1.adb",
@@ -38,7 +40,7 @@ SRC := (
    package Compiler is
       for Default_Switches ("ada") use ("-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y.N",
                                         "-fstack-check", "-g", "-gnato", "-gnata",
-                                        "-gnateE", "-gnateF", "-Wall");
+                                        "-gnateE", "-gnateF", "-Wall", "-gnat2022");
       for Local_Configuration_Pragmas use "pragma_debug.adc";
    end Compiler;
 

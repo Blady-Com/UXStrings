@@ -84,6 +84,14 @@ The fourth part defines various API coming from Unbounded\_String such as Append
 
 Note: Iterable is a GNAT specific aspect.
 
+With string lists we can write:
+
+``` ada
+   UXSL1 : constant UXStrings.Lists.UXString_List := ["Ada", "Strings", "Wide_Wide_Maps", "Wide_Wide_Constants", "Lower_Case_Map"];
+...
+   UXS1 : constant UXStrings.UXString := UXSL1.Join ('-').To_Lower;
+```
+
 ## UXStrings implementations
 
 ### UXStrings 1
@@ -111,6 +119,10 @@ A third proof of concept implementation is provided. The source code files are e
 #### Implementation choices
 
 In addition to implementation UXStrings 1, Unbounded\_Wide\_Wide\_Strings Ada standard package is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with the Unbounded capacity.
+
+### Children units
+
+- UXStrings.Conversions: convenient subprograms to convert String into basic types and vice versa- UXStrings.Formatting: subprogram formatting integers- UXStrings.Hash_case_insensitive: compute hash not case sensitive- UXStrings.Hash: compute hash- UXStrings.Lists: convenient subprograms to manage string lists - **NEW** -- UXStrings.Text_IO.Text_Streams: subprogram giving access to text streams- UXStrings.Text_IO: standard Text_IO subprograms adapted to UXStrings
 
 ### Limitations
 

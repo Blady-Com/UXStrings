@@ -7,6 +7,8 @@ with Ada.Characters.Wide_Latin_1;
 private with Ada.Strings.Wide_Wide_Unbounded;
 private with Ada.Streams;
 
+limited with UXStrings.Lists;
+
 package UXStrings is
 
    type Case_Sensitivity is (Insensitive, Sensitive);
@@ -396,6 +398,21 @@ package UXStrings is
    procedure Replace (Source : in out UXString; Before, After : UXString; Sensitivity : Case_Sensitivity := Sensitive);
    -- Update Source which has had the before text replaced with the after text
    -- wherever the before text is found with respect of case sensitivity
+
+   ------------------------------
+   -- String split Subprograms --
+   ------------------------------
+
+   function Split
+     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive)
+      return UXStrings.Lists.UXString_List;
+   -- Return a string list resulting in spliting Source into substrings wherever Separator occurs
+   function Split
+     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive) return UXStrings.Lists.UXString_List;
+   -- Return a string list resulting in spliting Source into substrings wherever Separator occurs
+   function Split
+     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside) return UXStrings.Lists.UXString_List;
+   -- Return a string list resulting in spliting Source into substrings wherever Separator occurs with respect of Test membership
 
 private
 

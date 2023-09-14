@@ -16,6 +16,8 @@ with Ada.Wide_Characters.Handling;
 with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
 with GNAT.UTF_32;
 
+with UXStrings.Lists;
+
 package body UXStrings is
 
    use Ada.Strings.Wide_Wide_Unbounded;
@@ -1222,4 +1224,66 @@ package body UXStrings is
       Source := Replace (Source, Before, After, Sensitivity);
    end Replace;
 
+   -----------
+   -- Split --
+   -----------
+
+   function Split
+     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive)
+      return UXStrings.Lists.UXString_List
+   is
+   begin
+      return Split (Source, From_Unicode (Separator), Sensitivity);
+   end Split;
+
+   -----------
+   -- Split --
+   -----------
+
+   function Split
+     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive) return UXStrings.Lists.UXString_List
+   is
+      Result : UXStrings.Lists.UXString_List;
+      Ind1   : Positive := Source.First;
+      Ind2   : Natural  := Ind1;
+   begin
+      while Ind1 <= Source.Last and Ind2 > 0 loop
+         if Sensitivity = Sensitive then
+            Ind2 := Source.Index (Separator, Ind1);
+         else
+            Ind2 :=
+              Source.Index (Separator, Ind1, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map);
+         end if;
+         if Ind2 > 0 then
+            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            Ind1 := Ind2 + Separator.Length;
+         end if;
+      end loop;
+      Result.Append (Source.Slice (Ind1, Source.Last));
+      return Result;
+   end Split;
+
+   -----------
+   -- Split --
+   -----------
+
+   function Split
+     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside) return UXStrings.Lists.UXString_List
+   is
+      Result : UXStrings.Lists.UXString_List;
+      Ind1   : Positive := Source.First;
+      Ind2   : Natural  := Ind1;
+   begin
+      while Ind1 <= Source.Last and Ind2 > 0 loop
+         Ind2 := Source.Index (Separator, Ind1, Test);
+         if Ind2 > 0 then
+            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            Ind1 := Ind2 + 1;
+         end if;
+      end loop;
+      Result.Append (Source.Slice (Ind1, Source.Last));
+      return Result;
+   end Split;
+
 end UXStrings;
+

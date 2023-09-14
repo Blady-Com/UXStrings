@@ -18,7 +18,7 @@ project UXStrings3 is
    package Compiler is
       for Default_Switches ("ada") use ("-gnatW8", "-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y.N",
                                         "-fstack-check", "-g", "-gnato", "-gnata",
-                                        "-gnateE", "-gnateF", "-Wall");
+                                        "-gnateE", "-gnateF", "-Wall", "-gnat2022");
       for Local_Configuration_Pragmas use "pragma_debug.adc";
    end Compiler;
 
