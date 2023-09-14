@@ -3,6 +3,7 @@ with UXStrings.Text_IO; use UXStrings.Text_IO;
 with UXStrings.Conversions;
 with UXStrings.Hash;
 with UXStrings.Formatting;
+with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
 
 procedure Test_UXStrings is
 
@@ -95,6 +96,22 @@ begin
    C := S1.Get_Latin_1 (3); -- same result but avoid all string conversion
    Put_Line (Image(Character'pos (C), 16));
    Put_Line (Format (5, 2, True, 10, Center, '@'));
+
+   Put_Line (Image(S1.Contains ("Riri")));
+   Put_Line (Image(S1.Contains ("et", Insensitive)));
+   Put_Line (Image(S2.Contains ("Riri")));
+   Put_Line (Image(S2.Count ("lo", Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map)));
+   Put_Line (Image(S2.Ends_With ("Fifi")));
+   Put_Line (Image(S3.Ends_With ("Loulou")));
+   Put_Line (Image(S3.Starts_With ("riri", Insensitive)));
+   Put_Line (Image(S2.Is_Lower ));
+   Put_Line (Image(S2.Is_Upper) );
+   Put_Line (Image(S2.Is_Basic ));
+   Put_Line (Image(S2.Is_Empty ));
+   Put_Line (S2.Remove ("ou"));
+   Put_Line (S2.Remove ("fi", Insensitive) & '.');
+   Put_Line (S2.Replace ("lou", "Coin", Insensitive));
+
    Put_Line ("--end--");
 end Test_UXStrings;
 

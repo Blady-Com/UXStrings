@@ -13,6 +13,7 @@ with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wi
 with Ada.Wide_Wide_Characters.Handling;          use Ada.Wide_Wide_Characters.Handling;
 with Ada.Characters.Conversions;                 use Ada.Characters.Conversions;
 with Ada.Wide_Characters.Handling;
+with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
 with GNAT.UTF_32;
 
 package body UXStrings is
@@ -1023,5 +1024,202 @@ package body UXStrings is
    begin
       return From_Unicode (To_Basic (To_Wide_Wide_String (Item.Chars)));
    end To_Basic;
+
+   --------------
+   -- Contains --
+   --------------
+
+   function Contains (Source : UXString; Pattern : UXString; Sensitivity : Case_Sensitivity := Sensitive) return Boolean
+   is
+   begin
+      if Sensitivity = Sensitive then
+         return Source.Index (Pattern) > 0;
+      else
+         return Source.Index (Pattern, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map) > 0;
+      end if;
+   end Contains;
+
+   ---------------
+   -- Ends_With --
+   ---------------
+
+   function Ends_With
+     (Source : UXString; Pattern : UXString; Sensitivity : Case_Sensitivity := Sensitive) return Boolean
+   is
+   begin
+      if Sensitivity = Sensitive then
+         return Source.Index (Pattern) = Source.Last - Pattern.Length + 1;
+      else
+         return
+           Source.Index (Pattern, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map) =
+           Source.Last - Pattern.Length + 1;
+      end if;
+   end Ends_With;
+
+   -----------------
+   -- Starts_With --
+   -----------------
+
+   function Starts_With
+     (Source : UXString; Pattern : UXString; Sensitivity : Case_Sensitivity := Sensitive) return Boolean
+   is
+   begin
+      if Sensitivity = Sensitive then
+         return Source.Index (Pattern) = 1;
+      else
+         return Source.Index (Pattern, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map) = 1;
+      end if;
+   end Starts_With;
+
+   --------------
+   -- Is_Lower --
+   --------------
+
+   function Is_Lower (Source : UXString) return Boolean is
+   begin
+      return Source = Source.To_Lower;
+   end Is_Lower;
+
+   --------------
+   -- Is_Upper --
+   --------------
+
+   function Is_Upper (Source : UXString) return Boolean is
+   begin
+      return Source = Source.To_Upper;
+   end Is_Upper;
+
+   --------------
+   -- Is_Basic --
+   --------------
+
+   function Is_Basic (Source : UXString) return Boolean is
+   begin
+      return Source = Source.To_Basic;
+   end Is_Basic;
+
+   --------------
+   -- Is_Empty --
+   --------------
+
+   function Is_Empty (Source : UXString) return Boolean is
+   begin
+      return Source = Null_UXString;
+   end Is_Empty;
+
+   ------------
+   -- Remove --
+   ------------
+
+   function Remove
+     (Source : UXString; Pattern : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive) return UXString
+   is
+   begin
+      return Source.Remove (From_Unicode (Pattern), Sensitivity);
+   end Remove;
+
+   ------------
+   -- Remove --
+   ------------
+
+   procedure Remove (Source : in out UXString; Pattern : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive)
+   is
+   begin
+      Source := Remove (Source, Pattern, Sensitivity);
+   end Remove;
+
+   ------------
+   -- Remove --
+   ------------
+
+   function Remove (Source : UXString; Pattern : UXString; Sensitivity : Case_Sensitivity := Sensitive) return UXString
+   is
+      Result : UXString;
+      Ind1   : Positive := Source.First;
+      Ind2   : Natural  := Ind1;
+   begin
+      while Ind1 <= Source.Last and Ind2 > 0 loop
+         if Sensitivity = Sensitive then
+            Ind2 := Source.Index (Pattern, Ind1);
+         else
+            Ind2 :=
+              Source.Index (Pattern, Ind1, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map);
+         end if;
+         if Ind2 > 0 then
+            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            Ind1 := Ind2 + Pattern.Length;
+         end if;
+      end loop;
+      Result.Append (Source.Slice (Ind1, Source.Last));
+      return Result;
+   end Remove;
+
+   ------------
+   -- Remove --
+   ------------
+
+   procedure Remove (Source : in out UXString; Pattern : UXString; Sensitivity : Case_Sensitivity := Sensitive) is
+   begin
+      Source := Remove (Source, Pattern, Sensitivity);
+   end Remove;
+
+   -------------
+   -- Replace --
+   -------------
+
+   function Replace
+     (Source : UXString; Before, After : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive) return UXString
+   is
+   begin
+      return Source.Replace (From_Unicode (Before), From_Unicode (After), Sensitivity);
+   end Replace;
+
+   -------------
+   -- Replace --
+   -------------
+
+   procedure Replace
+     (Source : in out UXString; Before, After : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive)
+   is
+   begin
+      Source := Replace (Source, Before, After, Sensitivity);
+   end Replace;
+
+   -------------
+   -- Replace --
+   -------------
+
+   function Replace
+     (Source : UXString; Before, After : UXString; Sensitivity : Case_Sensitivity := Sensitive) return UXString
+   is
+      Result : UXString;
+      Ind1   : Positive := Source.First;
+      Ind2   : Natural  := Ind1;
+   begin
+      while Ind1 <= Source.Last and Ind2 > 0 loop
+         if Sensitivity = Sensitive then
+            Ind2 := Source.Index (Before, Ind1);
+         else
+            Ind2 := Source.Index (Before, Ind1, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map);
+         end if;
+         if Ind2 > 0 then
+            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            Result.Append (After);
+            Ind1 := Ind2 + Before.Length;
+         end if;
+      end loop;
+      Result.Append (Source.Slice (Ind1, Source.Last));
+      return Result;
+   end Replace;
+
+   -------------
+   -- Replace --
+   -------------
+
+   procedure Replace (Source : in out UXString; Before, After : UXString; Sensitivity : Case_Sensitivity := Sensitive)
+   is
+   begin
+      Source := Replace (Source, Before, After, Sensitivity);
+   end Replace;
 
 end UXStrings;
