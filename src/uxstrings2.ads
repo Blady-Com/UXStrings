@@ -16,7 +16,7 @@ package UXStrings is
 
    subtype ASCII_Character is Ada.Characters.Handling.ISO_646;
    subtype ASCII_Character_Array is String with
-        Dynamic_Predicate => (for all Item of ASCII_Character_Array => Item in ASCII_Character);
+       Dynamic_Predicate => (for all Item of ASCII_Character_Array => Item in ASCII_Character);
    -- Characters in ISO/IEC 646
 
    subtype Latin_1_Character is Character;
@@ -38,9 +38,9 @@ package UXStrings is
    -- Array of 8 bits values representing UTF encodings (UTF-8, UTF-16BE, or UTF-16LE)
 
    type UXString is tagged private with
-      Constant_Indexing => Element,
-      Iterable          => (First => First, Next => Next, Has_Element => Has_Element, Element => Element),
-      String_Literal    => From_Unicode;
+     Constant_Indexing => Element,
+     Iterable          => (First => First, Next => Next, Has_Element => Has_Element, Element => Element),
+     String_Literal    => From_Unicode;
    -- Container type of Unicode characters with dynamic size usually named string
 
    Null_UXString : constant UXString;

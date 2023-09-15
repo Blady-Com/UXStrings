@@ -16,7 +16,7 @@ procedure Test_UXStrings2 is
    procedure Send (Msg : UTF_8_Character_Array) is
    begin
       for Code of Msg loop
-         Put (Image (Character'pos (Code), 16));
+         Put (Image (Character'Pos (Code), 16));
       end loop;
       New_Line;
    end Send;
@@ -59,25 +59,25 @@ begin
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Put_Line (Image (S1.Is_ASCII) & ' ' & Image (S2.Is_ASCII) & ' ' & Image (S3.Is_ASCII));
    Put_Line
-     (Image (Index (S1, "ee")) & Image (Index (S2, "ee"), prefix => ' ') & Image (index (S3, "ee", 10), prefix => ' '));
+     (Image (Index (S1, "ee")) & Image (Index (S2, "ee"), Prefix => ' ') & Image (Index (S3, "ee", 10), Prefix => ' '));
    C   := S1.Get_ASCII (6);
    WC  := S1.Get_BMP (7);
    WWC := S1 (1);
    Put_Line
-     (Image (Character'pos (C), 16) & ',' & Image (Wide_Character'pos (WC), 16) & ',' &
-      Image (Wide_Wide_Character'pos (WWC), 16));
+     (Image (Character'Pos (C), 16) & ',' & Image (Wide_Character'Pos (WC), 16) & ',' &
+      Image (Wide_Wide_Character'Pos (WWC), 16));
    for I in S3 loop
       F := S3.Get_ASCII (I) = 'e';
 --        if F then
 --           Replace_Latin_1 (S2 ,I, 'e');
 --        end if;
       WWC := S3 (I);
-      Put_Line (Image (I) & ':' & Image (Wide_Wide_Character'pos (WWC), 16) & ',' & Image (F));
+      Put_Line (Image (I) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
    for CC of S2 loop
       WWC := CC;
       F   := CC = 'e';
-      Put_Line (Image (Wide_Wide_Character'pos (WWC), 16) & ',' & Image (F));
+      Put_Line (Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
 --     Replace_Unicode (S1 ,3, WWC);
 --     S1.Replace_BMP (2, WC);
@@ -97,9 +97,9 @@ begin
    Put_Line (Image (Integer (UXStrings.Hash (S1)), 16));
    Put_Line (Image (Value ("  + 73")));
    C := S1.To_Latin_1 (3);
-   Put_Line (Image (Character'pos (C), 16));
+   Put_Line (Image (Character'Pos (C), 16));
    C := S1.Get_Latin_1 (3); -- same result but avoid all string conversion
-   Put_Line (Image (Character'pos (C), 16));
+   Put_Line (Image (Character'Pos (C), 16));
    Put_Line (Format (5, 2, True, 10, Center, '@'));
    Put_Line ("--end--");
 end Test_UXStrings2;
