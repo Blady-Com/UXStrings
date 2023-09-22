@@ -101,7 +101,7 @@ package UXStrings.Text_IO is
 
    function Page_Mark return UXString;
 
-   function End_Of_File (File : in File_Type) return Boolean;
+   function End_Of_File (File : in out File_Type) return Boolean;
    function End_Of_File return Boolean;
 
    procedure Set_Col (File : in File_Type; To : in Positive_Count);

@@ -31,6 +31,19 @@ procedure Test_UXStrings_Text_IO is
       Put_Line ("File read.");
    end;
 
+   procedure Get (Encoding : Encoding_Scheme) is
+      F : File_Type;
+      Ch : Unicode_Character;
+   begin
+      Open (F, In_File, "test_" & Image(Encoding) & ".txt", Encoding);
+      while not End_Of_File(F) loop
+         Get (F, Ch);
+         Put (Ch);
+      end loop;
+      Close (F);
+      Put_Line ("File with get.");
+   end;
+
    procedure Write_Stream is
       F : File_Type;
       S : Stream_Access;
@@ -76,6 +89,9 @@ begin
       end if;
       if S1.Index ("fread")= S1.First then
          Read(if S1.index ("utf_") > 0 then Value (S1.Slice (7, S1.Length)) else Latin_1);
+      end if;
+      if S1.Starts_With ("fget") then
+         Get(if S1.index ("utf_") > 0 then Value (S1.Slice (6, S1.Length)) else Latin_1);
       end if;
       if S1.Index ("swrite")= S1.First then
          Write_Stream;
