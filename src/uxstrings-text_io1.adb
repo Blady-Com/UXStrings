@@ -595,10 +595,26 @@ package body UXStrings.Text_IO is
    -- Skip_Line --
    ---------------
 
-   procedure Skip_Line (File : in File_Type; Spacing : in Positive_Count := 1) is
+   procedure Skip_Line (File : in out File_Type; Spacing : in Positive_Count := 1) is
+      Pointer   : Positive;
+      Available : Boolean;
+      EOL       : Boolean := False;
    begin
-      pragma Compile_Time_Warning (Standard.True, "Skip_Line unimplemented");
-      raise Program_Error with "Unimplemented procedure Skip_Line";
+      -- Read one more time even if EOF is set, in case of standard input was empty
+      if File.Buffer'Length = 0 then
+         Read_More (File);
+      end if;
+      Pointer := File.Buffer'First;
+      for Skip in 1 .. Spacing loop
+         while not EOL loop
+            Step (File, Pointer, Available, EOL);
+            if not Available then
+               raise End_Error;
+            end if;
+         end loop;
+         EOL := False;
+      end loop;
+      Truncate_Buffer (File, Pointer);
    end Skip_Line;
 
    ---------------
@@ -607,18 +623,25 @@ package body UXStrings.Text_IO is
 
    procedure Skip_Line (Spacing : in Positive_Count := 1) is
    begin
-      pragma Compile_Time_Warning (Standard.True, "Skip_Line unimplemented");
-      raise Program_Error with "Unimplemented procedure Skip_Line";
+      Skip_Line (Cur_In, Spacing);
    end Skip_Line;
 
    -----------------
    -- End_Of_Line --
    -----------------
 
-   function End_Of_Line (File : in File_Type) return Boolean is
+   function End_Of_Line (File : in out File_Type) return Boolean is
+      Pointer   : Positive;
+      Available : Boolean;
+      EOL       : Boolean;
    begin
-      pragma Compile_Time_Warning (Standard.True, "End_Of_Line unimplemented");
-      return raise Program_Error with "Unimplemented function End_Of_Line";
+      -- Read one more time even if EOF is set, in case of standard input was empty
+      if File.Buffer'Length = 0 then
+         Read_More (File);
+      end if;
+      Pointer := File.Buffer'First;
+      Step (File, Pointer, Available, EOL);
+      return EOL or not Available;
    end End_Of_Line;
 
    -----------------
@@ -627,8 +650,7 @@ package body UXStrings.Text_IO is
 
    function End_Of_Line return Boolean is
    begin
-      pragma Compile_Time_Warning (Standard.True, "End_Of_Line unimplemented");
-      return raise Program_Error with "Unimplemented function End_Of_Line";
+      return End_Of_Line (Cur_In);
    end End_Of_Line;
 
    ---------------

@@ -37,8 +37,13 @@ procedure Test_UXStrings_Text_IO is
    begin
       Open (F, In_File, "test_" & Image(Encoding) & ".txt", Encoding);
       while not End_Of_File(F) loop
-         Get (F, Ch);
-         Put (Ch);
+         if End_Of_Line(F) then
+            Put_line ("<EOL>");
+            Skip_Line(F);
+         else
+            Get (F, Ch);
+            Put (Ch);
+         end if;
       end loop;
       Close (F);
       Put_Line ("File with get.");
