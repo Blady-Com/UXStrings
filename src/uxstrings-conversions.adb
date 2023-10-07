@@ -5,7 +5,7 @@
 -- NOTES                        : Ada 202x
 --
 -- COPYRIGHT                    : (c) Pascal Pignard 2020
--- LICENCE                      : CeCILL V2.1 (https://cecill.info)
+-- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
 

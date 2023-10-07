@@ -137,7 +137,7 @@ These implementations which are only for demonstrate the possible usages of UXSt
 Here are some ideas:
 
 - Use memory management as implemented in XStrings from [GNATColl](https://github.com/AdaCore/gnatcoll-core/blob/master/src/gnatcoll-strings_impl.ads).
-- Use Unbounded\_Strings for memory management with UTF-8 encoding.
+- Use Ada Vectors for memory management with Unicode characters.
 - Adapt the inner implementation to the actual content with 8 bits character encodings, 16 bits or 32 bits.
 
 ## Tests
@@ -175,10 +175,10 @@ Note: Alire will take care of dependencies.
 
 The provided UXStrings specifications are intend to be public.
 Constructive criticism and alternative implementations of these specifications are expected.
-The actual proposed implementation is under [CeCILL](https://cecill.info) licence.
+The actual proposed implementation is under [CeCILL-C](https://cecill.info) licence.
 
 ## Feedbacks
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, April 2021, August 2022, March-September 2023.
+Pascal Pignard, April 2021, August 2022, March-October 2023.
