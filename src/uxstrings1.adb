@@ -496,9 +496,7 @@ package body UXStrings is
            Source'First + Ada.Strings.UTF_Encoding.BOM_8'Length
          else Source'First);
    begin
-      return UXS : UXString do
-         UXS.Chars := new UTF_8_Character_Array'(Source (Start .. Source'Last));
-      end return;
+      return (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Source (Start .. Source'Last)), others => <>);
    end From_UTF_8;
 
    ---------------
