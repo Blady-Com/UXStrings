@@ -302,10 +302,9 @@ package body UXStrings is
 
    function From_ASCII (Item : ASCII_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'((1 => Item));
-         UXS.Full_ASCII := True;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'((1 => Item)), Full_ASCII => True,
+         others                                 => <>);
    end From_ASCII;
 
    ----------------
@@ -314,10 +313,9 @@ package body UXStrings is
 
    function From_ASCII (Source : ASCII_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(Source);
-         UXS.Full_ASCII := True;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Source), Full_ASCII => True,
+         others                                 => <>);
    end From_ASCII;
 
    ----------------
@@ -381,10 +379,9 @@ package body UXStrings is
 
    function From_Latin_1 (Item : Latin_1_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Item));
-         UXS.Full_ASCII := Latin_1_Character'Pos (Item) < 16#80#;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Item)),
+         Full_ASCII                             => Latin_1_Character'Pos (Item) < 16#80#, others => <>);
    end From_Latin_1;
 
    ------------------
@@ -393,10 +390,9 @@ package body UXStrings is
 
    function From_Latin_1 (Source : Latin_1_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Source));
-         UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Source)),
+         Full_ASCII                             => (for all Item of Source => Item in ASCII_Character), others => <>);
    end From_Latin_1;
 
    ------------
@@ -458,10 +454,9 @@ package body UXStrings is
 
    function From_BMP (Item : BMP_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Item));
-         UXS.Full_ASCII := BMP_Character'Pos (Item) < 16#80#;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Item)),
+         Full_ASCII                             => BMP_Character'Pos (Item) < 16#80#, others => <>);
    end From_BMP;
 
    --------------
@@ -470,10 +465,9 @@ package body UXStrings is
 
    function From_BMP (Source : BMP_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Source));
-         UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Source)),
+         Full_ASCII => (for all Item of Source => BMP_Character'Pos (Item) < 16#80#), others => <>);
    end From_BMP;
 
    ----------------
@@ -530,10 +524,9 @@ package body UXStrings is
 
    function From_Unicode (Item : Unicode_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Item));
-         UXS.Full_ASCII := Unicode_Character'Pos (Item) < 16#80#;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Item)),
+         Full_ASCII                             => Unicode_Character'Pos (Item) < 16#80#, others => <>);
    end From_Unicode;
 
    ------------------
@@ -542,10 +535,9 @@ package body UXStrings is
 
    function From_Unicode (Source : Unicode_Character_Array) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Source));
-         UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Source)),
+         Full_ASCII => (for all Item of Source => Unicode_Character'Pos (Item) < 16#80#), others => <>);
    end From_Unicode;
 
    --------------
@@ -571,10 +563,9 @@ package body UXStrings is
            Source'First + Ada.Strings.UTF_Encoding.BOM_8'Length
          else Source'First);
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(Source (Start .. Source'Last));
-         UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Source (Start .. Source'Last)),
+         Full_ASCII => (for all Item of Source (Start .. Source'Last) => Item in ASCII_Character), others => <>);
    end From_UTF_8;
 
    ---------------
@@ -601,13 +592,13 @@ package body UXStrings is
 
    function From_UTF_16 (Source : UTF_16_Character_Array; Input_Scheme : UTF_16_Encoding_Scheme) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars :=
+      return
+        (Ada.Finalization.Controlled with
+         Chars =>
            new UTF_8_Character_Array'
              (Ada.Strings.UTF_Encoding.Conversions.Convert
-                (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8));
-         UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-      end return;
+                (Source, To_UTF_Encoding (Input_Scheme), Ada.Strings.UTF_Encoding.UTF_8)),
+         Full_ASCII => (for all Item of Source => Item in ASCII_Character), others => <>);
    end From_UTF_16;
 
    ---------
@@ -681,10 +672,9 @@ package body UXStrings is
 
    function "&" (Left : UXString; Right : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(Left.Chars.all & Right.Chars.all);
-         UXS.Full_ASCII := Left.Full_ASCII and Right.Full_ASCII;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Left.Chars.all & Right.Chars.all),
+         Full_ASCII                             => Left.Full_ASCII and Right.Full_ASCII, others => <>);
    end "&";
 
    ---------
@@ -693,10 +683,9 @@ package body UXStrings is
 
    function "&" (Left : UXString; Right : Unicode_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(Left.Chars.all & To_UTF8 (Right));
-         UXS.Full_ASCII := Left.Full_ASCII and Unicode_Character'Pos (Right) < 16#80#;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Left.Chars.all & To_UTF8 (Right)),
+         Full_ASCII => Left.Full_ASCII and Unicode_Character'Pos (Right) < 16#80#, others => <>);
    end "&";
 
    ---------
@@ -705,10 +694,9 @@ package body UXStrings is
 
    function "&" (Left : Unicode_Character; Right : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(To_UTF8 (Left) & Right.Chars.all);
-         UXS.Full_ASCII := Unicode_Character'Pos (Left) < 16#80# and Right.Full_ASCII;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(To_UTF8 (Left) & Right.Chars.all),
+         Full_ASCII => Unicode_Character'Pos (Left) < 16#80# and Right.Full_ASCII, others => <>);
    end "&";
 
    -------------------
@@ -772,20 +760,24 @@ package body UXStrings is
       Pointer2 : Integer;
    begin
       if Source.Full_ASCII then
-         return UXS : UXString do
-            UXS.Chars :=
-              new UTF_8_Character_Array'(Source.Chars (Source.Chars'First + Low - 1 .. Source.Chars'First + High - 1));
-            UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-         end return;
+         return
+           (Ada.Finalization.Controlled with
+            Chars =>
+              new UTF_8_Character_Array'(Source.Chars (Source.Chars'First + Low - 1 .. Source.Chars'First + High - 1)),
+            Full_ASCII =>
+              (for all Item of Source.Chars (Source.Chars'First + Low - 1 .. Source.Chars'First + High - 1) =>
+                 Item in ASCII_Character),
+            others => <>);
       else
          if Low <= High then
             Skip (Source.Chars.all, Pointer1, Low - 1);
             Pointer2 := Pointer1;
             Skip (Source.Chars.all, Pointer2, High - Low + 1);
-            return UXS : UXString do
-               UXS.Chars      := new UTF_8_Character_Array'(Source.Chars (Pointer1 .. Pointer2 - 1));
-               UXS.Full_ASCII := (for all Item of UXS.Chars.all => Item in ASCII_Character);
-            end return;
+            return
+              (Ada.Finalization.Controlled with
+               Chars      => new UTF_8_Character_Array'(Source.Chars (Pointer1 .. Pointer2 - 1)),
+               Full_ASCII => (for all Item of Source.Chars (Pointer1 .. Pointer2 - 1) => Item in ASCII_Character),
+               others     => <>);
          else
             return Null_UXString;
          end if;
@@ -1046,21 +1038,21 @@ package body UXStrings is
    begin
       if Source.Full_ASCII and By.Full_ASCII then
          if Low <= High then
-            return UXS : UXString do
-               UXS.Chars :=
+            return
+              (Ada.Finalization.Controlled with
+               Chars =>
                  new UTF_8_Character_Array'
                    (Source.Chars (Source.Chars'First .. Source.Chars'First + Low - 2) & By.Chars.all &
-                    Source.Chars (Source.Chars'First + High .. Source.Chars'Last));
-               UXS.Full_ASCII := True;
-            end return;
+                    Source.Chars (Source.Chars'First + High .. Source.Chars'Last)),
+               Full_ASCII => True, others => <>);
          else
-            return UXS : UXString do
-               UXS.Chars :=
+            return
+              (Ada.Finalization.Controlled with
+               Chars =>
                  new UTF_8_Character_Array'
                    (Source.Chars (Source.Chars'First .. Source.Chars'First + Low - 2) & By.Chars.all &
-                    Source.Chars (Source.Chars'First + Low - 1 .. Source.Chars'Last));
-               UXS.Full_ASCII := True;
-            end return;
+                    Source.Chars (Source.Chars'First + Low - 1 .. Source.Chars'Last)),
+               Full_ASCII => True, others => <>);
          end if;
       else
          if Low <= High then
@@ -1087,13 +1079,13 @@ package body UXStrings is
    function Insert (Source : UXString; Before : Positive; New_Item : UXString) return UXString is
    begin
       if Source.Full_ASCII and New_Item.Full_ASCII then
-         return UXS : UXString do
-            UXS.Chars :=
+         return
+           (Ada.Finalization.Controlled with
+            Chars =>
               new UTF_8_Character_Array'
                 (Source.Chars (Source.Chars'First .. Source.Chars'First + Before - 2) & New_Item.Chars.all &
-                 Source.Chars (Source.Chars'First + Before - 1 .. Source.Chars'Last));
-            UXS.Full_ASCII := True;
-         end return;
+                 Source.Chars (Source.Chars'First + Before - 1 .. Source.Chars'Last)),
+            Full_ASCII => True, others => <>);
       else
          return Source.Slice (Source.First, Before - 1) & New_Item & Source.Slice (Before, Source.Last);
       end if;
@@ -1115,13 +1107,13 @@ package body UXStrings is
    function Overwrite (Source : UXString; Position : Positive; New_Item : UXString) return UXString is
    begin
       if Source.Full_ASCII and New_Item.Full_ASCII then
-         return UXS : UXString do
-            UXS.Chars :=
+         return
+           (Ada.Finalization.Controlled with
+            Chars =>
               new UTF_8_Character_Array'
                 (Source.Chars (Source.Chars'First .. Source.Chars'First + Position - 2) & New_Item.Chars.all &
-                 Source.Chars (Source.Chars'First + Position + New_Item.Chars'Length - 1 .. Source.Chars'Last));
-            UXS.Full_ASCII := True;
-         end return;
+                 Source.Chars (Source.Chars'First + Position + New_Item.Chars'Length - 1 .. Source.Chars'Last)),
+            Full_ASCII => True, others => <>);
       else
          return
            Replace_Slice
@@ -1146,13 +1138,13 @@ package body UXStrings is
    begin
       if From <= Through then
          if Source.Full_ASCII then
-            return UXS : UXString do
-               UXS.Chars :=
+            return
+              (Ada.Finalization.Controlled with
+               Chars =>
                  new UTF_8_Character_Array'
                    (Source.Chars (Source.Chars'First .. Source.Chars'First + From - 2) &
-                    Source.Chars (Source.Chars'First + Through .. Source.Chars'Last));
-               UXS.Full_ASCII := True;
-            end return;
+                    Source.Chars (Source.Chars'First + Through .. Source.Chars'Last)),
+               Full_ASCII => True, others => <>);
          else
             return Replace_Slice (Source, From, Through, Null_UXString);
          end if;
@@ -1177,10 +1169,9 @@ package body UXStrings is
    function Trim (Source : UXString; Side : Trim_End) return UXString is
    begin
       if Source.Full_ASCII then
-         return UXS : UXString do
-            UXS.Chars      := new UTF_8_Character_Array'(Trim (Source.Chars.all, Side));
-            UXS.Full_ASCII := True;
-         end return;
+         return
+           (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Trim (Source.Chars.all, Side)),
+            Full_ASCII                             => True, others => <>);
       else
          return From_UTF_8 (Encode (Trim (Decode (Source.Chars.all), Side)));
       end if;
@@ -1221,17 +1212,16 @@ package body UXStrings is
       Len : constant Natural := Source.Length;
    begin
       if Count > Len then
-         return UXS : UXString do
-            UXS.Chars      := new UTF_8_Character_Array'(Source.Chars.all & (Count - Len) * (To_UTF8 (Pad)));
-            UXS.Full_ASCII := Source.Full_ASCII and Unicode_Character'Pos (Pad) < 16#80#;
-         end return;
+         return
+           (Ada.Finalization.Controlled with
+            Chars      => new UTF_8_Character_Array'(Source.Chars.all & (Count - Len) * (To_UTF8 (Pad))),
+            Full_ASCII => Source.Full_ASCII and Unicode_Character'Pos (Pad) < 16#80#, others => <>);
       else
          if Source.Full_ASCII then
-            return UXS : UXString do
-               UXS.Chars :=
-                 new UTF_8_Character_Array'(Source.Chars (Source.Chars'First .. Source.Chars'First + Count - 1));
-               UXS.Full_ASCII := True;
-            end return;
+            return
+              (Ada.Finalization.Controlled with
+               Chars => new UTF_8_Character_Array'(Source.Chars (Source.Chars'First .. Source.Chars'First + Count - 1)),
+               Full_ASCII => True, others => <>);
          else
             return Source.Slice (Source.First, Count);
          end if;
@@ -1255,17 +1245,16 @@ package body UXStrings is
       Len : constant Natural := Source.Length;
    begin
       if Count > Len then
-         return UXS : UXString do
-            UXS.Chars      := new UTF_8_Character_Array'(Source.Chars.all & (Count - Len) * (To_UTF8 (Pad)));
-            UXS.Full_ASCII := Source.Full_ASCII and Unicode_Character'Pos (Pad) < 16#80#;
-         end return;
+         return
+           (Ada.Finalization.Controlled with
+            Chars      => new UTF_8_Character_Array'(Source.Chars.all & (Count - Len) * (To_UTF8 (Pad))),
+            Full_ASCII => Source.Full_ASCII and Unicode_Character'Pos (Pad) < 16#80#, others => <>);
       else
          if Source.Full_ASCII then
-            return UXS : UXString do
-               UXS.Chars :=
-                 new UTF_8_Character_Array'(Source.Chars (Source.Chars'Last - Count + 1 .. Source.Chars'Last));
-               UXS.Full_ASCII := True;
-            end return;
+            return
+              (Ada.Finalization.Controlled with
+               Chars => new UTF_8_Character_Array'(Source.Chars (Source.Chars'Last - Count + 1 .. Source.Chars'Last)),
+               Full_ASCII => True, others => <>);
          else
             return Source.Slice (Len - Count + 1, Len);
          end if;
@@ -1287,10 +1276,9 @@ package body UXStrings is
 
    function "*" (Left : Natural; Right : UXString) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(Left * Right.Chars.all);
-         UXS.Full_ASCII := Right.Full_ASCII;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Left * Right.Chars.all),
+         Full_ASCII                             => Right.Full_ASCII, others => <>);
    end "*";
 
    ---------
@@ -1299,10 +1287,9 @@ package body UXStrings is
 
    function "*" (Left : Natural; Right : Unicode_Character) return UXString is
    begin
-      return UXS : UXString do
-         UXS.Chars      := new UTF_8_Character_Array'(Left * (To_UTF8 (Right)));
-         UXS.Full_ASCII := Unicode_Character'Pos (Right) < 16#80#;
-      end return;
+      return
+        (Ada.Finalization.Controlled with Chars => new UTF_8_Character_Array'(Left * (To_UTF8 (Right))),
+         Full_ASCII                             => Unicode_Character'Pos (Right) < 16#80#, others => <>);
    end "*";
 
    ----------------------------
