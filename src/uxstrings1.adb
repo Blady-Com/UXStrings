@@ -11,6 +11,7 @@
 
 with Ada.Strings.Fixed;                          use Ada.Strings.Fixed;
 with Ada.Strings.Wide_Wide_Fixed;                use Ada.Strings.Wide_Wide_Fixed;
+with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
 with Ada.Strings.UTF_Encoding.Conversions;
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 with Ada.Unchecked_Deallocation;
@@ -1153,5 +1154,31 @@ package body UXStrings is
    begin
       return From_UTF_8 (Encode (To_Basic (Decode (Item.Chars.all))));
    end To_Basic;
+
+   -------------
+   -- Replace --
+   -------------
+
+   procedure Replace (Source : in out UXString; Before, After : UXString; Sensitivity : Case_Sensitivity := Sensitive)
+   is
+      Result : UXString;
+      Ind1   : Positive := Source.First;
+      Ind2   : Natural  := Ind1;
+   begin
+      while Ind1 <= Source.Last and Ind2 > 0 loop
+         if Sensitivity = Sensitive then
+            Ind2 := Source.Index (Before, Ind1);
+         else
+            Ind2 := Source.Index (Before, Ind1, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map);
+         end if;
+         if Ind2 > 0 then
+            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            Result.Append (After);
+            Ind1 := Ind2 + Before.Length;
+         end if;
+      end loop;
+      Result.Append (Source.Slice (Ind1, Source.Last));
+      Source := Result;
+   end Replace;
 
 end UXStrings;

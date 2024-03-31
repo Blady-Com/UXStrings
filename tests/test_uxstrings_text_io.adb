@@ -92,10 +92,10 @@ begin
       if S1.Index ("fwrite") = S1.First then
          Write (if S1.index ("utf_") > 0 then Value (S1.Slice (8, S1.Length)) else Latin_1);
       end if;
-      if S1.Index ("fread")= S1.First then
+      if S1.Index ("fread") = S1.First then
          Read(if S1.index ("utf_") > 0 then Value (S1.Slice (7, S1.Length)) else Latin_1);
       end if;
-      if S1.Starts_With ("fget") then
+      if S1.Index ("fget") = S1.First then
          Get(if S1.index ("utf_") > 0 then Value (S1.Slice (6, S1.Length)) else Latin_1);
       end if;
       if S1.Index ("swrite")= S1.First then
