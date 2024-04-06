@@ -417,16 +417,16 @@ package UXStrings is
    ------------------------------
 
    function Split
-     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive)
-      return UXStrings.Lists.UXString_List;
+     (Source           : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List;
    -- Return a string list resulting in spliting Source into substrings wherever Separator occurs
    function Split
-     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive)
-      return UXStrings.Lists.UXString_List;
+     (Source           : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List;
    -- Return a string list resulting in spliting Source into substrings wherever Separator occurs
    function Split
-     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside)
-      return UXStrings.Lists.UXString_List;
+     (Source           : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List;
    -- Return a string list resulting in spliting Source into substrings wherever Separator occurs with respect of Test membership
 
 private

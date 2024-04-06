@@ -1271,11 +1271,12 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive)
+     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive;
+     Keep_Empty_Parts : Boolean := True)
       return UXStrings.Lists.UXString_List
    is
    begin
-      return Split (Source, From_Unicode (Separator), Sensitivity);
+      return Split (Source, From_Unicode (Separator), Sensitivity, Keep_Empty_Parts);
    end Split;
 
    -----------
@@ -1283,7 +1284,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive) return UXStrings.Lists.UXString_List
+     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive;
+     Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
       Result : UXStrings.Lists.UXString_List;
       Ind1   : Positive := Source.First;
@@ -1297,11 +1299,15 @@ package body UXStrings is
               Source.Index (Separator, Ind1, Forward, Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map);
          end if;
          if Ind2 > 0 then
-            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            if Ind1 < Ind2 - 1 or Keep_Empty_Parts then
+               Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            end if;
             Ind1 := Ind2 + Separator.Length;
          end if;
       end loop;
-      Result.Append (Source.Slice (Ind1, Source.Last));
+      if Ind1 <Source.Last or Keep_Empty_Parts then
+         Result.Append (Source.Slice (Ind1, Source.Last));
+      end if;
       return Result;
    end Split;
 
@@ -1310,7 +1316,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside) return UXStrings.Lists.UXString_List
+     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside;
+     Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
       Result : UXStrings.Lists.UXString_List;
       Ind1   : Positive := Source.First;
@@ -1319,11 +1326,15 @@ package body UXStrings is
       while Ind1 <= Source.Last and Ind2 > 0 loop
          Ind2 := Source.Index (Separator, Ind1, Test);
          if Ind2 > 0 then
-            Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            if Ind1 < Ind2 - 1 or Keep_Empty_Parts then
+               Result.Append (Source.Slice (Ind1, Ind2 - 1));
+            end if;
             Ind1 := Ind2 + 1;
          end if;
       end loop;
-      Result.Append (Source.Slice (Ind1, Source.Last));
+            if Ind1 <Source.Last or Keep_Empty_Parts then
+         Result.Append (Source.Slice (Ind1, Source.Last));
+         end if;
       return Result;
    end Split;
 

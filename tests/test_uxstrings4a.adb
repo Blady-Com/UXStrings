@@ -132,7 +132,7 @@ begin
    for E of UXSL1 loop
       Put_Line (E);
    end loop;
-   for E of S4.Split(Ada.Strings.Wide_Wide_Maps.To_Set(".(,) ")).Sort loop
+   for E of S4.Split(Ada.Strings.Wide_Wide_Maps.To_Set(".(,) "), Keep_Empty_Parts => False).Sort loop
       Put_Line (E);
    end loop;
    Put_Line (UXSL1.Join ('-').To_Lower);
