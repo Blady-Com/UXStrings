@@ -3,8 +3,9 @@ with UXStrings.Text_IO; use UXStrings.Text_IO;
 with UXStrings.Conversions;
 with UXStrings.Hash;
 with UXStrings.Formatting;
+with Ada.Characters.Conversions;
 
-procedure Test_UXStrings2 is
+procedure Test_UXStrings4b is
 
    function Image is new UXStrings.Conversions.Scalar_Image (Boolean);
    function Image is new UXStrings.Conversions.Integer_Image (Integer);
@@ -28,7 +29,7 @@ procedure Test_UXStrings2 is
    WWC        : Wide_Wide_Character;
    F          : Boolean;
    D          : constant array (Positive range <>) of Natural := (16#0075#, 16#003E#, 16#30E3#, 16#03A3#);
-   --     Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
+   Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
 
 begin
    -- Change the default to LF and ASCII
@@ -46,11 +47,11 @@ begin
    S3 := S1 & " - Sent ok";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    S1 := 4 * '.';
-   --     S2 := From_BMP (Data);
-   --     S3 := 4*'.';
-   --     for I in Data'Range loop
-   --        S3(I) := Data (I); -- discriminant check failed
-   --     end loop;
+   S2 := From_BMP (Data);
+   S3 := 4*'.';
+   for I in Data'Range loop
+      S3(I) := Ada.Characters.Conversions.to_wide_wide_character(Data (I));
+   end loop;
    S1 := From_ASCII ('r');
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    S1 := "etait blah blah";
@@ -65,24 +66,24 @@ begin
    WWC := S1 (1);
    Put_Line
      (Image (Character'Pos (C), 16) & ',' & Image (Wide_Character'Pos (WC), 16) & ',' &
-      Image (Wide_Wide_Character'Pos (WWC), 16));
-   for I in S3 loop
-      F := S3.Get_ASCII (I) = 'e';
---        if F then
---           Replace_Latin_1 (S2 ,I, 'e');
---        end if;
+        Image (Wide_Wide_Character'Pos (WWC), 16));
+   for I in S3.iterate loop
+      F := S3.Get_ASCII (UXString_Vector.to_index(I)) = 'e';
+      if F then
+         S3(I) := 'e';
+      end if;
       WWC := S3 (I);
-      Put_Line (Image (I) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
+      Put_Line (Image (UXString_Vector.to_index(I)) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
    for CC of S2 loop
       WWC := CC;
       F   := CC = 'e';
       Put_Line (Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
---     Replace_Unicode (S1 ,3, WWC);
---     S1.Replace_BMP (2, WC);
---     S1.Replace_Latin_1 (1, C);
---     Put_Line (S1);
+   Replace_Unicode (S1 ,3, WWC);
+   S1.Replace_BMP (2, WC);
+   S1.Replace_Latin_1 (1, C);
+   Put_Line (S1);
    if S1 /= "test" then
       S1 := Null_UXString;
       S2 := 2 * 'z';
@@ -102,4 +103,4 @@ begin
    Put_Line (Image (Character'Pos (C), 16));
    Put_Line (Format (5, 2, True, 10, Center, '@'));
    Put_Line ("--end--");
-end Test_UXStrings2;
+end Test_UXStrings4b;

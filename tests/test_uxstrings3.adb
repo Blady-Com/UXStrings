@@ -5,9 +5,8 @@ with UXStrings.Hash;
 with UXStrings.Formatting;
 with UXStrings.Lists;
 with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
-with Ada.Characters.Conversions;
 
-procedure Test_UXStrings is
+procedure Test_UXStrings3 is
 
    function Image is new UXStrings.Conversions.Scalar_Image (Boolean);
    function Image is new UXStrings.Conversions.Integer_Image (Integer);
@@ -25,22 +24,13 @@ procedure Test_UXStrings is
    end;
    function Receive return UTF_8_Character_Array is (To_UTF_8("données"));
 
-   generic
-      with function Character_Mapping (From : Unicode_Character) return Unicode_Character;
-   procedure Translate (Source : in out UXString);
-
-   procedure Translate (Source : in out UXString) is
-   begin
-      Source := From_Unicode((for C of Source =>  Character_Mapping(C)));
-   end;
-
    S1, S2, S3 : UXString;
    C          : Character;
    WC         : Wide_Character;
    WWC        : Wide_Wide_Character;
    F          : Boolean;
    D : constant array (Positive range <>) of Natural := (16#0075#, 16#003E#, 16#30E3#, 16#03A3#);
-   Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
+   --     Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
 
    UXSL1 : constant UXStrings.Lists.UXString_List := ["Ada", "Strings", "Wide_Wide_Maps", "Wide_Wide_Constants", "Lower_Case_Map"];
    S4 : constant UXString := "Ada.Strings.Wide_Wide_Maps.Is_Subset(Item, My_Set)";
@@ -61,40 +51,38 @@ begin
    S3 := S1 & " - Sent ok";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    S1 := 4*'.';
-   S2 := From_BMP (Data);
-   S3 := 4*'.';
-   for I in Data'Range loop
-      S3(I) := Ada.Characters.Conversions.to_wide_wide_character(Data (I));
-   end loop;
+   --     S2 := From_BMP (Data);
+   --     S3 := 4*'.';
+   --     for I in Data'Range loop
+   --        S3(I) := Data (I); -- discriminant check failed
+   --     end loop;
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    S1 := "était blah blah";
    S2 := "une soirée passée à étudier la physique ω=Δθ/Δt...";
    S3 := "une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Put_Line (Image(Index (S1, "ée")) & Image(Index (S2, "ée"),prefix=> ' ') & Image(index (S3, "ée", 10),prefix =>' '));
-   C   := S1.Get_Latin_1 (5);
+   C   := S1.Get_Latin_1 (6);
    WC  := S1.Get_BMP (7);
    WWC := S1 (1);
    Put_Line (Image(Character'pos (C), 16) & ',' & Image(Wide_Character'pos (WC), 16)  & ','& Image(Wide_Wide_Character'pos (WWC), 16));
-   for I in S3.Iterate loop
-      F   := S3.Get_Latin_1 (UXString_Vector.to_index(I)) = 'é';
-      if F then
-         S3(I) := 'e';
-      end if;
+   for I in S3 loop
+      F   := S3.Get_Latin_1 (I) = 'é';
+--        if F then
+--           Replace_Latin_1 (S2 ,I, 'e');
+--        end if;
       WWC := S3 (I);
-      Put_Line (Image(UXString_Vector.to_index(I)) & ':' & Image(Wide_Wide_Character'pos (WWC), 16) & ',' & Image(F));
+      Put_Line (Image(I) & ':' & Image(Wide_Wide_Character'pos (WWC), 16) & ',' & Image(F));
    end loop;
-   Put_Line (S3);
    for CC of S2 loop
       WWC := CC;
       F   := CC = 'é';
       Put_Line (Image(Wide_Wide_Character'pos (WWC), 16)  & ','& Image(F));
    end loop;
-   Replace_Unicode (S1 ,3, WWC);
-   S1.Replace_BMP (2, WC);
-   S1.Replace_Latin_1 (1, C);
-   S1 (4) := 'Z';
-   Put_Line (S1);
+--     Replace_Unicode (S1 ,3, WWC);
+--     S1.Replace_BMP (2, WC);
+--     S1.Replace_Latin_1 (1, C);
+--     Put_Line (S1);
    if S1 /= "test" then
       S1 := Null_UXString;
       S2 := 2 * 'z';
@@ -141,5 +129,4 @@ begin
    end loop;
 
    Put_Line ("--end--");
-end Test_UXStrings;
-
+end Test_UXStrings3;
