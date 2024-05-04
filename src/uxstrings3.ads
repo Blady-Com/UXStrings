@@ -187,9 +187,9 @@ package UXStrings is
    procedure Replace_Unicode (Source : in out UXString; Index : Positive; By : Unicode_Character);
    -- Update Source such as the character at Index position is set to the Unicode character parameter By
 
-   function Slice (Source : UXString; Low : Positive; High : Natural) return UXString;
+   function Slice (Source : UXString; Low : Positive; High : Integer) return UXString;
    -- Return the slice at positions Low through High from Source
-   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Natural);
+   procedure Slice (Source : UXString; Target : out UXString; Low : Integer; High : Natural);
    -- Set Target to the slice at positions Low through High from Source
 
    function "=" (Left : UXString; Right : UXString) return Boolean;

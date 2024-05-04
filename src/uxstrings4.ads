@@ -20,7 +20,7 @@ package UXStrings is
 
    subtype ASCII_Character is Ada.Characters.Handling.ISO_646;
    subtype ASCII_Character_Array is String with
-     Dynamic_Predicate => (for all Item of ASCII_Character_Array => Item in ASCII_Character);
+       Dynamic_Predicate => (for all Item of ASCII_Character_Array => Item in ASCII_Character);
    -- Characters in ISO/IEC 646
 
    subtype Latin_1_Character is Character;
@@ -200,9 +200,9 @@ package UXStrings is
    procedure Replace_Unicode (Source : in out UXString; Index : Positive; By : Unicode_Character);
    -- Update Source such as the character at Index position is set to the Unicode character parameter By
 
-   function Slice (Source : UXString; Low : Positive; High : Natural) return UXString;
+   function Slice (Source : UXString; Low : Positive; High : Integer) return UXString;
    -- Return the slice at positions Low through High from Source
-   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Natural);
+   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Integer);
    -- Set Target to the slice at positions Low through High from Source
 
    function "=" (Left : UXString; Right : UXString) return Boolean;

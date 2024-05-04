@@ -64,13 +64,13 @@ procedure Test_UXStrings_Text_IO is
 
    procedure Read_Stream is
       F : File_Type;
-      T : UTF_8_Character_Array (1..40);
+      T : Latin_1_Character_Array (1..40);
       S : Stream_Access;
    begin
       Open (F, In_File, "test_stream.txt", Latin_1);
       S := Stream (F);
-      UTF_8_Character_Array'Read (S, T);
-      Put_Line (From_UTF_8 (T));
+      Latin_1_Character_Array'Read (S, T);
+      Put_Line (From_Latin_1 (T));
       Close (F);
       Put_Line ("File read.");
    end;

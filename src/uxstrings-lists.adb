@@ -2,9 +2,9 @@
 -- NAME (body)                  : uxstrings-lists.adb
 -- AUTHOR                       : Pascal Pignard
 -- ROLE                         : UXString lists implementation.
--- NOTES                        : Ada 202x
+-- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2023
+-- COPYRIGHT                    : (c) Pascal Pignard 2024
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
@@ -133,12 +133,17 @@ package body UXStrings.Lists is
 
    function Join (Source : UXString_List; Separator : Unicode_Character) return UXString is
       Result : UXString;
+      use type Ada.Containers.Count_Type;
    begin
-      for Item of Source loop
-         Result.Append (Item);
-         Result.Append (Separator);
-      end loop;
-      return Result.Slice (Result.First, Result.Last - 1);
+      if Source.Length > 0 then
+         for Item of Source loop
+            Result.Append (Item);
+            Result.Append (Separator);
+         end loop;
+         return Result.Slice (Result.First, Result.Last - 1);
+      else
+         return Null_UXString;
+      end if;
    end Join;
 
    ----------
@@ -147,12 +152,17 @@ package body UXStrings.Lists is
 
    function Join (Source : UXString_List; Separator : UXString) return UXString is
       Result : UXString;
+      use type Ada.Containers.Count_Type;
    begin
-      for Item of Source loop
-         Result.Append (Item);
-         Result.Append (Separator);
-      end loop;
-      return Result.Slice (Result.First, Result.Last - Separator.Length);
+      if Source.Length > 0 then
+         for Item of Source loop
+            Result.Append (Item);
+            Result.Append (Separator);
+         end loop;
+         return Result.Slice (Result.First, Result.Last - Separator.Length);
+      else
+         return Null_UXString;
+      end if;
    end Join;
 
    -----------------------

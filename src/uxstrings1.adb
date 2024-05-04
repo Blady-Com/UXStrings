@@ -2,9 +2,9 @@
 -- NAME (body)                  : uxstrings1.adb
 -- AUTHOR                       : Pascal Pignard
 -- ROLE                         : UXString implementation.
--- NOTES                        : Ada 202x
+-- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2023
+-- COPYRIGHT                    : (c) Pascal Pignard 2024
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
@@ -16,7 +16,6 @@ with Ada.Strings.UTF_Encoding.Conversions;
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 with Ada.Unchecked_Deallocation;
 with Ada.Wide_Wide_Characters.Handling;          use Ada.Wide_Wide_Characters.Handling;
-with Ada.Wide_Characters.Handling;
 with GNAT.UTF_32;
 with Strings_Edit.UTF8;                          use Strings_Edit.UTF8;
 with Strings_Edit.UTF8.Handling;                 use Strings_Edit.UTF8.Handling;
@@ -221,7 +220,7 @@ package body UXStrings is
 
    function Character_Set_Version return UXString is
    begin
-      return From_ASCII (Ada.Wide_Characters.Handling.Character_Set_Version);
+      return From_ASCII (Character_Set_Version);
    end Character_Set_Version;
 
    --------------
@@ -656,7 +655,7 @@ package body UXStrings is
    -- Slice --
    -----------
 
-   function Slice (Source : UXString; Low : Positive; High : Natural) return UXString is
+   function Slice (Source : UXString; Low : Positive; High : Integer) return UXString is
       Pointer1 : Integer := Source.Chars'First;
       Pointer2 : Integer;
    begin
@@ -674,7 +673,7 @@ package body UXStrings is
    -- Slice --
    -----------
 
-   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Natural) is
+   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Integer) is
    begin
       Target := Slice (Source, Low, High);
    end Slice;

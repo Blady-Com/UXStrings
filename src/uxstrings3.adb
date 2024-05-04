@@ -2,9 +2,9 @@
 -- NAME (body)                  : uxstrings3.adb
 -- AUTHOR                       : Pascal Pignard
 -- ROLE                         : UXString implementation.
--- NOTES                        : Ada 202x
+-- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2023
+-- COPYRIGHT                    : (c) Pascal Pignard 2024
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.pagesperso-orange.fr
 -------------------------------------------------------------------------------
@@ -12,7 +12,6 @@
 with Ada.Strings.UTF_Encoding.Wide_Wide_Strings; use Ada.Strings.UTF_Encoding.Wide_Wide_Strings;
 with Ada.Wide_Wide_Characters.Handling;          use Ada.Wide_Wide_Characters.Handling;
 with Ada.Characters.Conversions;                 use Ada.Characters.Conversions;
-with Ada.Wide_Characters.Handling;
 with Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants;
 with GNAT.UTF_32;
 
@@ -55,7 +54,7 @@ package body UXStrings is
 
    procedure Bounded_Move (Source : in out UXString; Target : out UXString; Max : Natural; Last : out Natural) is
    begin
-      Last   := Natural'Min (Target.Length, Max);
+      Last   := Natural'Min (Target.Last, Max);
       Target := Source.Slice (1, Last);
       Delete (Source, 1, Last);
    end Bounded_Move;
@@ -128,7 +127,7 @@ package body UXStrings is
 
    function Character_Set_Version return UXString is
    begin
-      return From_ASCII (Ada.Wide_Characters.Handling.Character_Set_Version);
+      return From_ASCII (Character_Set_Version);
    end Character_Set_Version;
 
    --------------
@@ -150,19 +149,30 @@ package body UXStrings is
    end Is_ASCII;
 
    ---------------
+   -- To_ASCII --
+   ---------------
+
+   function To_ASCII
+     (Item : unicode_character; Substitute : in ASCII_Character := Q_L) return ASCII_Character
+   is
+      Pos : constant Natural := Unicode_Character'Pos (Item);
+   begin
+      if Pos > 16#7F# then
+         return Substitute;
+      else
+         return ASCII_Character'Val (Pos);
+      end if;
+   end To_ASCII;
+
+  ---------------
    -- Get_ASCII --
    ---------------
 
    function Get_ASCII
      (Source : UXString; Index : Positive; Substitute : in ASCII_Character := Q_L) return ASCII_Character
    is
-      Item : constant Natural := Unicode_Character'Pos (Source (Index));
    begin
-      if Item > 16#7F# then
-         return Substitute;
-      else
-         return ASCII_Character'Val (Item);
-      end if;
+      return to_ascii (Source (Index), substitute);
    end Get_ASCII;
 
    --------------
@@ -171,13 +181,7 @@ package body UXStrings is
 
    function To_ASCII (Source : UXString; Substitute : in ASCII_Character := Q_L) return ASCII_Character_Array is
    begin
-      --  return [for Ind in Source.First .. Source.Last => Source.Get_ASCII (Ind, Substitute)];
-      --  GNAT BUG DETECTED in gnat_to_gnu_entity, at ada/gcc-interface/decl.cc:472
-      return ACA : ASCII_Character_Array (1 .. Source.Length) := (others => Substitute) do
-         for Ind in ACA'Range loop
-            ACA (Ind) := Source.Get_ASCII (Ind, Substitute);
-         end loop;
-      end return;
+      return [for E of Source => to_ascii (E , substitute)];
    end To_ASCII;
 
    ----------------
@@ -525,7 +529,7 @@ package body UXStrings is
    -- Slice --
    -----------
 
-   function Slice (Source : UXString; Low : Positive; High : Natural) return UXString is
+   function Slice (Source : UXString; Low : Positive; High : Integer) return UXString is
    begin
       return From_Unicode (Slice (Source.Chars, Low, High));
    end Slice;
@@ -534,7 +538,7 @@ package body UXStrings is
    -- Slice --
    -----------
 
-   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Natural) is
+   procedure Slice (Source : UXString; Target : out UXString; Low : Integer; High : Natural) is
    begin
       Target := Slice (Source, Low, High);
    end Slice;
@@ -726,7 +730,6 @@ package body UXStrings is
    is
    begin
       Find_Token (Source.Chars, Set, From, Test, First, Last);
-
    end Find_Token;
 
    ----------------
@@ -1297,4 +1300,3 @@ package body UXStrings is
    end Split;
 
 end UXStrings;
-
