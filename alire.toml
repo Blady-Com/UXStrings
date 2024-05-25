@@ -1,6 +1,6 @@
 name = "uxstrings"
 description = "Unicode Extended Strings utilities"
-version = "0.7.0+alpha-20240406"
+version = "0.7.1+alpha-20240525"
 tags = ["unicode", "dynamic", "string"]
 
 authors = ["Pascal Pignard"]
@@ -13,5 +13,6 @@ licenses = "CECILL-C"
 project-files = ["lib_uxstrings.gpr"]
 
 [[depends-on]]
-gnat = ">=2021 | (>=12 & <2000)"
-simple_components = "^4.62.0"
+gnat = "^13.0"
+# Put in comment since dependancies of SC puzzled Alire
+# simple_components = "^4.62.0"
