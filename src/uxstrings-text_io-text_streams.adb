@@ -6,7 +6,7 @@
 --
 -- COPYRIGHT                    : (c) Pascal Pignard 2021
 -- LICENCE                      : CeCILL-C (https://cecill.info)
--- CONTACT                      : http://blady.pagesperso-orange.fr
+-- CONTACT                      : http://blady.chez.com
 -------------------------------------------------------------------------------
 
 with Ada.Unchecked_Conversion;
