@@ -128,5 +128,25 @@ begin
       Put_Line (E);
    end loop;
 
+   declare
+      use UXStrings.Formatting;
+      A : constant Formatted_UXString := Format ("Valeurs %X %s %c") & 22 & True & 'e';
+      My_Format : constant Formatted_UXString := Format ("%s");
+   begin
+      Put_Line (From (Format ("%s : %E") & "a well known float" & Float'(3.14)));
+      Put_Line (From (My_Format & "a string"));
+      Put_Line (From (A));
+   end;
+
+   declare
+      use UXStrings.Formatting;
+      F : Formatted_UXString := Format ("['%c' ; %10d]");
+      C : constant Character := 'v';
+      I : constant Integer   := 98;
+   begin
+      F := F & C & I;
+      Put_Line (From (F));
+   end;
+
    Put_Line ("--end--");
 end Test_UXStrings3;

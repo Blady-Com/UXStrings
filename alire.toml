@@ -1,6 +1,6 @@
 name = "uxstrings"
 description = "Unicode Extended Strings utilities"
-version = "0.7.1+alpha-20240525"
+version = "0.8.1+alpha-20241006"
 tags = ["unicode", "dynamic", "string"]
 
 authors = ["Pascal Pignard"]

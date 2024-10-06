@@ -120,7 +120,7 @@ A third proof of concept implementation is provided. The source code files are e
 
 In addition to implementation UXStrings 1, Unbounded\_Wide\_Wide\_Strings Ada standard package is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with the Unbounded capacity.
 
-### UXStrings 4 - **NEW** -
+### UXStrings 4
 
 A fourth proof of concept implementation is provided. The source code files are ending with the number 4 as for instance "uxstrings4.ads". A GNAT project file "uxstrings.gpr" is provided with variant choice UXS_VARIANT set to UXS4 and some naming conventions for both packages UXStrings and UXStrings.Text\_IO.
 
@@ -131,10 +131,10 @@ In addition to implementation UXStrings 1, Ada.Containers.Vectors standard gener
 ### Children units
 
 - UXStrings.Conversions: convenient subprograms to convert String into basic types and vice versa
-- UXStrings.Formatting: subprogram formatting integers
+- UXStrings.Formatting: subprogram formatting integers, floats, enumerates and more with format like lib C printf - ***NEW*** -
 - UXStrings.Hash_case_insensitive: compute hash not case sensitive
 - UXStrings.Hash: compute hash
-- UXStrings.Lists: convenient subprograms to manage string lists - **NEW** -
+- UXStrings.Lists: convenient subprograms to manage string lists
 - UXStrings.Text_IO.Text_Streams: subprogram giving access to text streams
 - UXStrings.Text_IO: standard Text_IO subprograms adapted to UXStrings
 
@@ -187,4 +187,4 @@ The actual proposed implementation is under [CeCILL-C](https://cecill.info) lice
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, April 2021, August 2022, March-October 2023, April 2024.
+Pascal Pignard, April 2021, August 2022, March-October 2023, April-October 2024.
