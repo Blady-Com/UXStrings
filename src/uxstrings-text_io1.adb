@@ -34,8 +34,9 @@ package body UXStrings.Text_IO is
       Saved_Access : String_Access := File.Buffer;
       procedure Free is new Ada.Unchecked_Deallocation (String, String_Access);
       pragma Warnings (Off, Saved_Access);
+      LS : constant Standard.String (1 .. File.Buffer'Last + 1 - From) := File.Buffer (From .. File.Buffer'Last);
    begin
-      File.Buffer := new String'(File.Buffer (From .. File.Buffer'Last));
+      File.Buffer := new String'(LS);
       Free (Saved_Access);
    end Truncate_Buffer;
 
