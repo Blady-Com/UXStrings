@@ -1,3 +1,4 @@
+pragma Wide_Character_Encoding (UTF8);
 with UXStrings;   use UXStrings;
 with UXStrings.Text_IO; use UXStrings.Text_IO;
 with UXStrings.Conversions;

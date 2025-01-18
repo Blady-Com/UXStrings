@@ -45,7 +45,7 @@ project UXStrings is
    end Naming;
   
    package Compiler is
-      for Default_Switches ("ada") use ("-gnatW8", "-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y.N",
+      for Default_Switches ("ada") use ("-gnatU", "-gnatf", "-gnatVaep", "-gnatw.eDH.Y.N",
                                         "-fstack-check", "-g", "-gnato", "-gnata",
                                         "-gnateE", "-gnateF", "-gnat2022", "-Wall");
       for Local_Configuration_Pragmas use "pragma_debug.adc";
