@@ -76,6 +76,15 @@ procedure Test_UXStrings_Text_IO is
       Put_Line ("File read.");
    end;
 
+   procedure Read_Text is
+      F : File_Type;
+   begin
+      Open (F, In_File, "test_UTF_8.txt", UTF_8);
+      Put_Text (Get_Text (F));
+      Close (F);
+      Put_Line ("Text read.");
+   end;
+
    S1 : UXString;
 
 begin
@@ -104,6 +113,9 @@ begin
       end if;
       if S1.Index ("sread")= S1.First then
          Read_Stream;
+      end if;
+      if S1.Index ("rtext")= S1.First then
+         Read_Text;
       end if;
    end loop;
    Put_Line ("<-->");

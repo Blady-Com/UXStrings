@@ -1270,4 +1270,67 @@ package body UXStrings.Text_IO is
       Put_Line (Cur_Out, Item);
    end Put_Line;
 
+   --------------
+   -- Get_Text --
+   --------------
+
+   procedure Get_Text (File : in out File_Type; Item : out UXStrings.Lists.UXString_List; Count : Natural := 0) is
+      Line_Count : Natural := 0;
+   begin
+      Item.Clear;
+      while not End_Of_File (File) and (Count = 0 or Line_Count < Count) loop
+         Item.Append (Get_Line (File));
+         Line_Count := Line_Count + 1;
+      end loop;
+   end Get_Text;
+
+   --------------
+   -- Get_Text --
+   --------------
+
+   procedure Get_Text (Item : out UXStrings.Lists.UXString_List; Count : Natural := 0) is
+   begin
+      Get_Text (Cur_In, Item, Count);
+   end Get_Text;
+
+   --------------
+   -- Get_Text --
+   --------------
+
+   function Get_Text (File : in out File_Type; Count : Natural := 0) return UXStrings.Lists.UXString_List is
+   begin
+      return Text : UXStrings.Lists.UXString_List do
+         Get_Text (File, Text, Count);
+      end return;
+   end Get_Text;
+
+   --------------
+   -- Get_Text --
+   --------------
+
+   function Get_Text (Count : Natural := 0) return UXStrings.Lists.UXString_List is
+   begin
+      return Get_Text (Cur_In, Count);
+   end Get_Text;
+
+   --------------
+   -- Put_Text --
+   --------------
+
+   procedure Put_Text (File : in File_Type; Item : in UXStrings.Lists.UXString_List) is
+   begin
+      for Line of Item loop
+         Put_Line (File, Line);
+      end loop;
+   end Put_Text;
+
+   --------------
+   -- Put_Text --
+   --------------
+
+   procedure Put_Text (Item : in UXStrings.Lists.UXString_List) is
+   begin
+      Put_Text (Cur_Out, Item);
+   end Put_Text;
+
 end UXStrings.Text_IO;

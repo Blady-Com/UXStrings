@@ -1,3 +1,4 @@
+with UXStrings.Lists;
 private with GNAT.OS_Lib;
 
 package UXStrings.Text_IO is
@@ -157,6 +158,15 @@ package UXStrings.Text_IO is
 
    procedure Put_Line (File : in File_Type; Item : in UXString);
    procedure Put_Line (Item : in UXString);
+
+   procedure Get_Text (File : in out File_Type; Item : out UXStrings.Lists.UXString_List; Count : Natural := 0);
+   procedure Get_Text (Item : out UXStrings.Lists.UXString_List; Count : Natural := 0);
+
+   function Get_Text (File : in out File_Type; Count : Natural := 0) return UXStrings.Lists.UXString_List;
+   function Get_Text (Count : Natural := 0) return UXStrings.Lists.UXString_List;
+
+   procedure Put_Text (File : in File_Type; Item : in UXStrings.Lists.UXString_List);
+   procedure Put_Text (Item : in UXStrings.Lists.UXString_List);
 
    ----------------
    -- Exceptions --
