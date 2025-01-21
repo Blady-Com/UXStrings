@@ -153,7 +153,7 @@ package body UXStrings is
    ---------------
 
    function To_ASCII
-     (Item : unicode_character; Substitute : in ASCII_Character := Q_L) return ASCII_Character
+     (Item : Unicode_Character; Substitute : in ASCII_Character := Q_L) return ASCII_Character
    is
       Pos : constant Natural := Unicode_Character'Pos (Item);
    begin
@@ -172,7 +172,7 @@ package body UXStrings is
      (Source : UXString; Index : Positive; Substitute : in ASCII_Character := Q_L) return ASCII_Character
    is
    begin
-      return to_ascii (Source (Index), substitute);
+      return To_ASCII (Source (Index), Substitute);
    end Get_ASCII;
 
    --------------
@@ -181,7 +181,7 @@ package body UXStrings is
 
    function To_ASCII (Source : UXString; Substitute : in ASCII_Character := Q_L) return ASCII_Character_Array is
    begin
-      return [for E of Source => to_ascii (E , substitute)];
+      return [for E of Source => To_ASCII (E , Substitute)];
    end To_ASCII;
 
    ----------------

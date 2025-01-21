@@ -209,7 +209,7 @@ package body UXStrings is
    ---------------
 
    function To_ASCII
-     (Item : unicode_character; Substitute : in ASCII_Character := Q_L) return ASCII_Character
+     (Item : Unicode_Character; Substitute : in ASCII_Character := Q_L) return ASCII_Character
    is
       Pos : constant Natural := Unicode_Character'Pos (Item);
    begin
@@ -228,7 +228,7 @@ package body UXStrings is
      (Source : UXString; Index : Positive; Substitute : in ASCII_Character := Q_L) return ASCII_Character
    is
    begin
-      return To_ASCII (Source (Index), substitute);
+      return To_ASCII (Source (Index), Substitute);
    end Get_ASCII;
 
    --------------
@@ -542,7 +542,7 @@ package body UXStrings is
 
    procedure Replace_ASCII (Source : in out UXString; Index : Positive; By : ASCII_Character) is
    begin
-      Replace_element (source, Index, To_Wide_Wide_Character (by));
+      Replace_Element (Source, Index, To_Wide_Wide_Character (By));
    end Replace_ASCII;
 
    ---------------------
@@ -551,7 +551,7 @@ package body UXStrings is
 
    procedure Replace_Latin_1 (Source : in out UXString; Index : Positive; By : Latin_1_Character) is
    begin
-      Replace_element (source, Index, To_Wide_Wide_Character (By));
+      Replace_Element (Source, Index, To_Wide_Wide_Character (By));
    end Replace_Latin_1;
 
    -----------------
@@ -560,7 +560,7 @@ package body UXStrings is
 
    procedure Replace_BMP (Source : in out UXString; Index : Positive; By : BMP_Character) is
    begin
-      Replace_element (source, Index, To_Wide_Wide_Character (By));
+      Replace_Element (Source, Index, To_Wide_Wide_Character (By));
    end Replace_BMP;
 
    ---------------------
