@@ -8,8 +8,8 @@ project UXStrings is
    for Exec_Dir use "bin";
    for Create_Missing_Dirs use "True";
    
-   type UXStrings_Variants is ("UXS1", "UXS2", "UXS3", "UXS4");
-   UXStrings_Variant : UXStrings_Variants := external ("UXS_VARIANT", "UXS4");
+   type UXStrings_Variants is ("UXS1", "UXS2", "UXS3", "UXS4", "UXS5");
+   UXStrings_Variant : UXStrings_Variants := external ("UXS_VARIANT", "UXS5");
    
    TEST := ();
    case UXStrings_Variant is
@@ -20,6 +20,8 @@ project UXStrings is
       when "UXS3" =>
          TEST := ("test_uxstrings3.adb", "test_uxstrings_text_io.adb", "test_uxstrings2.adb", "test_uxstrings_text_io2.adb");
       when "UXS4" =>
+         TEST := ("test_uxstrings4a.adb", "test_uxstrings_text_io.adb", "test_uxstrings4b.adb", "test_uxstrings_text_io2.adb");
+      when "UXS5" =>
          TEST := ("test_uxstrings4a.adb", "test_uxstrings_text_io.adb", "test_uxstrings4b.adb", "test_uxstrings_text_io2.adb");
    end case;
 
@@ -39,6 +41,9 @@ project UXStrings is
          when "UXS4" =>
             for Spec ("UXStrings") use "uxstrings4.ads";
             for Body ("UXStrings") use "uxstrings4.adb";
+         when "UXS5" =>
+            for Spec ("UXStrings") use "uxstrings5.ads";
+            for Body ("UXStrings") use "uxstrings5.adb";
       end case;
       for Spec ("UXStrings.Text_IO") use "uxstrings-text_io1.ads";
       for Body ("UXStrings.Text_IO") use "uxstrings-text_io1.adb";

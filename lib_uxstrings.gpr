@@ -10,8 +10,8 @@ library project Lib_UXStrings is
    for Library_Dir use "lib";
    for Create_Missing_Dirs use "True";
 
-   type UXStrings_Variants is ("UXS1", "UXS2", "UXS3", "UXS4");
-   UXStrings_Variant : UXStrings_Variants := external ("UXS_VARIANT", "UXS4");
+   type UXStrings_Variants is ("UXS1", "UXS2", "UXS3", "UXS4", "UXS5");
+   UXStrings_Variant : UXStrings_Variants := external ("UXS_VARIANT", "UXS5");
 
    DEPS := (
         "strings_edit-integer_edit.adb",
@@ -52,6 +52,8 @@ library project Lib_UXStrings is
          SRC := SRC & ("uxstrings3.ads", "uxstrings3.adb");
       when "UXS4" =>
          SRC := SRC & ("uxstrings4.ads", "uxstrings4.adb");
+      when "UXS5" =>
+         SRC := SRC & ("uxstrings5.ads", "uxstrings5.adb");
    end case;
 
    for Source_Files use DEPS & SRC;
@@ -70,6 +72,9 @@ library project Lib_UXStrings is
          when "UXS4" =>
             for Spec ("UXStrings") use "uxstrings4.ads";
             for Body ("UXStrings") use "uxstrings4.adb";
+         when "UXS5" =>
+            for Spec ("UXStrings") use "uxstrings5.ads";
+            for Body ("UXStrings") use "uxstrings5.adb";
       end case;
       for Spec ("UXStrings.Text_IO") use "uxstrings-text_io1.ads";
       for Body ("UXStrings.Text_IO") use "uxstrings-text_io1.adb";
