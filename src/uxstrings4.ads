@@ -50,6 +50,10 @@ package UXStrings is
    -- Container type of Unicode characters with dynamic size usually named string
 
    function Constant_Reference
+     (Container : aliased UXString; Position : UXString_Vector.Cursor) return UXString_Vector.Constant_Reference_Type;
+   function Reference
+     (Container : aliased in out UXString; Position : UXString_Vector.Cursor) return UXString_Vector.Reference_Type;
+   function Constant_Reference
      (Container : aliased UXString; Index : Positive) return UXString_Vector.Constant_Reference_Type;
    function Reference (Container : aliased in out UXString; Index : Positive) return UXString_Vector.Reference_Type;
    function Iterate (Container : UXString) return UXString_Vector.Vector_Iterator_Interfaces.Reversible_Iterator'Class;
@@ -59,6 +63,7 @@ package UXStrings is
    function Empty (Capacity : Natural := 10) return UXString;
    function New_Vector (First, Last : Positive) return UXString;
    procedure Replace_Element (Container : in out UXString; Index : Positive; New_Item : Unicode_Character);
+   function To_Index (Position : UXString_Vector.Cursor) return Natural;
 
    Null_UXString : constant UXString;
    -- Represent the null string

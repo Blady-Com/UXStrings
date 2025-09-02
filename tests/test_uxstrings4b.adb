@@ -69,12 +69,12 @@ begin
      (Image (Character'Pos (C), 16) & ',' & Image (Wide_Character'Pos (WC), 16) & ',' &
         Image (Wide_Wide_Character'Pos (WWC), 16));
    for I in S3.iterate loop
-      F := S3.Get_ASCII (UXString_Vector.to_index(I)) = 'e';
+      F := S3.Get_ASCII (to_index(I)) = 'e';
       if F then
          S3(I) := 'e';
       end if;
       WWC := S3 (I);
-      Put_Line (Image (UXString_Vector.to_index(I)) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
+      Put_Line (Image (to_index(I)) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
    for CC of S2 loop
       WWC := CC;

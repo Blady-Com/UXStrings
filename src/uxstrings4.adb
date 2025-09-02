@@ -4,7 +4,7 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2024
+-- COPYRIGHT                    : (c) Pascal Pignard 2025
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.chez.com
 -------------------------------------------------------------------------------
@@ -21,6 +21,13 @@ with UXStrings.Lists;
 package body UXStrings is
 
    use UXString_Vector;
+
+   function Constant_Reference
+     (Container : aliased UXString; Position : UXString_Vector.Cursor) return Constant_Reference_Type is
+     (Constant_Reference (Vector (Container), Position));
+
+   function Reference (Container : aliased in out UXString; Position : UXString_Vector.Cursor) return Reference_Type is
+     (Reference (Vector (Container), Position));
 
    function Constant_Reference (Container : aliased UXString; Index : Positive) return Constant_Reference_Type is
      (Constant_Reference (Vector (Container), Index));
@@ -47,6 +54,8 @@ package body UXStrings is
    begin
       Replace_Element (Vector (Container), Index, New_Item);
    end Replace_Element;
+
+   function To_Index (Position : UXString_Vector.Cursor) return Natural is (UXString_Vector.To_Index (Position));
 
    -- Encoding Scheme cross correspondance
 
@@ -208,9 +217,7 @@ package body UXStrings is
    -- To_ASCII --
    ---------------
 
-   function To_ASCII
-     (Item : Unicode_Character; Substitute : in ASCII_Character := Q_L) return ASCII_Character
-   is
+   function To_ASCII (Item : Unicode_Character; Substitute : in ASCII_Character := Q_L) return ASCII_Character is
       Pos : constant Natural := Unicode_Character'Pos (Item);
    begin
       if Pos > 16#7F# then
@@ -497,7 +504,7 @@ package body UXStrings is
 
    procedure Prepend (Source : in out UXString; New_Item : UXString) is
    begin
-      Prepend (Vector (Source), Vector(New_Item));
+      Prepend (Vector (Source), Vector (New_Item));
    end Prepend;
 
    -------------
@@ -567,7 +574,8 @@ package body UXStrings is
    -- Replace_Unicode --
    ---------------------
 
-   procedure Replace_Unicode (Source : in out UXString; Index : Positive; By : Unicode_Character) renames Replace_Element;
+   procedure Replace_Unicode (Source : in out UXString; Index : Positive; By : Unicode_Character) renames
+     Replace_Element;
 
    -----------
    -- Slice --
@@ -852,7 +860,7 @@ package body UXStrings is
    function Insert (Source : UXString; Before : Positive; New_Item : UXString) return UXString is
    begin
       return UXS : UXString := Source do
-         Insert (Vector(UXS), Before, Vector(New_Item));
+         Insert (Vector (UXS), Before, Vector (New_Item));
       end return;
    end Insert;
 
@@ -862,7 +870,7 @@ package body UXStrings is
 
    procedure Insert (Source : in out UXString; Before : Natural; New_Item : UXString) is
    begin
-      Insert (Vector(Source), Before, Vector(New_Item));
+      Insert (Vector (Source), Before, Vector (New_Item));
    end Insert;
 
    ---------------
@@ -1055,12 +1063,8 @@ package body UXStrings is
      (Wide_Wide_Character'Val (GNAT.UTF_32.UTF_32_To_Basic (Wide_Wide_Character'Pos (Item))));
 
    function To_Basic (Item : Wide_Wide_String) return Wide_Wide_String is
-      Result : Wide_Wide_String (Item'Range);
    begin
-      for J in Result'Range loop
-         Result (J) := To_Basic (Item (J));
-      end loop;
-      return Result;
+      return [for E of Item => To_Basic (E)];
    end To_Basic;
 
    function To_Basic (Item : UXString) return UXString is
@@ -1270,9 +1274,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive;
-     Keep_Empty_Parts : Boolean := True)
-      return UXStrings.Lists.UXString_List
+     (Source           : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
    begin
       return Split (Source, From_Unicode (Separator), Sensitivity, Keep_Empty_Parts);
@@ -1283,8 +1286,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive;
-     Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
+     (Source           : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
       Result : UXStrings.Lists.UXString_List;
       Ind1   : Positive := Source.First;
@@ -1304,7 +1307,7 @@ package body UXStrings is
             Ind1 := Ind2 + Separator.Length;
          end if;
       end loop;
-      if Ind1 <Source.Last or Keep_Empty_Parts then
+      if Ind1 < Source.Last or Keep_Empty_Parts then
          Result.Append (Source.Slice (Ind1, Source.Last));
       end if;
       return Result;
@@ -1315,8 +1318,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside;
-     Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
+     (Source           : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
       Result : UXStrings.Lists.UXString_List;
       Ind1   : Positive := Source.First;
@@ -1331,9 +1334,9 @@ package body UXStrings is
             Ind1 := Ind2 + 1;
          end if;
       end loop;
-            if Ind1 <Source.Last or Keep_Empty_Parts then
+      if Ind1 < Source.Last or Keep_Empty_Parts then
          Result.Append (Source.Slice (Ind1, Source.Last));
-         end if;
+      end if;
       return Result;
    end Split;
 
