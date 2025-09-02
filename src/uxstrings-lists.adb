@@ -13,10 +13,38 @@ package body UXStrings.Lists is
 
    use UXString_Lists;
 
-   function Constant_Reference (Container : aliased UXString_List; Index : Positive) return Constant_Reference_Type is
+   function Constant_Reference
+     (Container : aliased UXString_List; Index : Positive) return UXString_Lists.Constant_Reference_Type is
      (Constant_Reference (Vector (Container), Index));
-   function Reference (Container : aliased in out UXString_List; Index : Positive) return Reference_Type is
+   function Reference
+     (Container : aliased in out UXString_List; Index : Positive) return UXString_Lists.Reference_Type is
      (Reference (Vector (Container), Index));
+
+   ----------------------
+   -- To_UXString_List --
+   ----------------------
+
+   function To_UXString_List (Item : UXString_Array) return UXString_List is
+   begin
+      return UXSL : UXString_List do
+         for S of Item loop
+            UXSL.Append (S);
+         end loop;
+      end return;
+   end To_UXString_List;
+
+   ------------------------
+   -- From_UXString_List --
+   ------------------------
+
+   function From_UXString_List (Item : UXString_List) return UXString_Array is
+   begin
+      return UXSA : UXString_Array (1 .. Natural (Item.Length)) do
+         for Ind in UXSA'Range loop
+            UXSA (Ind) := Item (Ind);
+         end loop;
+      end return;
+   end From_UXString_List;
 
    -------------------
    -- Append_Unique --
@@ -25,10 +53,10 @@ package body UXStrings.Lists is
    procedure Append_Unique
      (Source : in out UXString_List; New_Item : UXString; Sensitivity : Case_Sensitivity := Sensitive)
    is
-      Ind   : Cursor  := Source.First;
-      Found : Boolean := False;
+      Ind   : UXString_Lists.Cursor := Source.First;
+      Found : Boolean               := False;
    begin
-      while Ind /= No_Element loop
+      while Ind /= UXString_Lists.No_Element loop
          if Sensitivity = Sensitive then
             if Element (Ind) = New_Item then
                Found := True;

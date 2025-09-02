@@ -12,6 +12,10 @@ package UXStrings.Lists is
      (Container : aliased UXString_List; Index : Positive) return UXString_Lists.Constant_Reference_Type;
    function Reference (Container : aliased in out UXString_List; Index : Positive) return UXString_Lists.Reference_Type;
 
+   type UXString_Array is array (Positive range <>) of UXString;
+   function To_UXString_List (Item : UXString_Array) return UXString_List;
+   function From_UXString_List (Item : UXString_List) return UXString_Array;
+
    procedure Append_Unique
      (Source : in out UXString_List; New_Item : UXString; Sensitivity : Case_Sensitivity := Sensitive);
    -- Update Source to the concatenation of Source and New_Item if New_Item is not already included with respect of case sensitivity

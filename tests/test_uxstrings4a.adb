@@ -142,6 +142,12 @@ begin
    end loop;
 
    declare
+      A : constant UXStrings.Lists.UXString_Array := UXStrings.Lists.From_UXString_List (UXSL1);
+   begin
+      Put_Line ("First item: " & A(1));
+   end;
+
+   declare
       use UXStrings.Formatting;
       A : constant Formatted_UXString := Format ("Valeurs %X %s %c") & 22 & True & 'e';
       My_Format : constant Formatted_UXString := Format ("%s");
