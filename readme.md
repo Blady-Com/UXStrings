@@ -55,15 +55,15 @@ The second part defines the USXString type as a tagged private type which has go
    WC         : Wide_Character;
    WWC        : Wide_Wide_Character;
    ...
-   S1 := "était blah blah";
+   S1  := "était blah blah";
    C   := S1 (3);
    WC  := S1 (2);
    WWC := S1 (1);
    S1 (3) := WWC;
    S1 (2) := WC;
    S1 (1) := C;
-   S3  := "une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
-   for I in S3 loop
+   S3     := "une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
+   for I in S3.Iterate loop
       C   := S3 (I);
       WC  := S3 (I);
       WWC := S3 (I);
@@ -82,14 +82,12 @@ The third part defines conversion functions between UXString and various encodin
 
 The fourth part defines various API coming from Unbounded\_String such as Append, "&", Slice, "=", Index and so on.
 
-Note: Iterable is a GNAT specific aspect.
-
 With string lists we can write:
 
 ``` ada
    UXSL1 : constant UXStrings.Lists.UXString_List := ["Ada", "Strings", "Wide_Wide_Maps", "Wide_Wide_Constants", "Lower_Case_Map"];
 ...
-   UXS1 : constant UXStrings.UXString := UXSL1.Join ('-').To_Lower;
+   UXS1  : constant UXStrings.UXString := UXSL1.Join ('-').To_Lower;
 ```
 
 ## UXStrings implementations
@@ -102,6 +100,7 @@ A first proof of concept implementation is provided. The source code files are e
 
 UTF-8 encoding is chosen for internal representation. The [Strings_Edit library](http://www.dmitry-kazakov.de/ada/strings_edit.htm) is used for UTF-8 encoding management.
 [GNAT.OS_Lib](https://docs.adacore.com/gnat_rm-docs/html/gnat_rm/gnat_rm/the_gnat_library.html#gnat-os-lib-g-os-lib-ads) is chosen for input / output management.
+Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 2
 
@@ -111,6 +110,7 @@ A second proof of concept implementation is provided. The source code files are 
 
 In addition to implementation UXStrings 1, some API have been added to support ASCII 7 bits encoding. ASCII is a subset of UTF-8 thus no change with the internal representation.
 However, the API are now aware if content is full ASCII. On one hand, this permits to access directly to the position of one character without iterating on UTF-8 characters. Thus this is a time improvement when content is full ASCII. On the other hand, when content is changing the API check if the content is full ASCII. Thus this is a time penalty when changes are not full ASCII.
+Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 3
 
@@ -119,31 +119,42 @@ A third proof of concept implementation is provided. The source code files are e
 #### Implementation choices
 
 In addition to implementation UXStrings 1, Unbounded\_Wide\_Wide\_Strings Ada standard package is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with the Unbounded capacity.
+Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 4
 
 A fourth proof of concept implementation is provided. The source code files are ending with the number 4 as for instance "uxstrings4.ads". A GNAT project file "uxstrings.gpr" is provided with variant choice UXS_VARIANT set to UXS4 and some naming conventions for both packages UXStrings and UXStrings.Text\_IO.
+Note: Iteration is Ada 2022 native.
+
+### UXStrings 5 - ***NEW*** -
+
+A fifth proof of concept implementation is provided. The source code files are ending with the number 5 as for instance "uxstrings5.ads". A GNAT project file "uxstrings.gpr" is provided with variant choice UXS_VARIANT set to UXS5 and some naming conventions for both packages UXStrings and UXStrings.Text\_IO.
 
 #### Implementation choices
 
-In addition to implementation UXStrings 1, Ada.Containers.Vectors standard generic package is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with the container capacity.
+In addition to implementation UXStrings 1, Unicode_Character_Array (i.e.Wide\_Wide\_String) is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with dynamic allocation.
+Note: Iteration is Ada 2022 native.
 
 ### Children units
 
 - UXStrings.Conversions: convenient subprograms to convert String into basic types and vice versa
-- UXStrings.Formatting: subprogram formatting integers, floats, enumerates and more with format like lib C printf - ***NEW*** -
+- UXStrings.Formatting: subprogram formatting integers, floats, enumerates and more with format like lib C printf
 - UXStrings.Hash_case_insensitive: compute hash not case sensitive
 - UXStrings.Hash: compute hash
 - UXStrings.Lists: convenient subprograms to manage string lists
 - UXStrings.Text_IO.Text_Streams: subprogram giving access to text streams
 - UXStrings.Text_IO: standard Text_IO subprograms adapted to UXStrings
 
+### Performances
+
+A series of [perfomance tests](https://github.com/Blady-Com/UXStrings/blob/master/Performances%20of%20UXStrings.pdf) was carried out with several kind of texts.
+
 ### Limitations
 
 These implementations which are only for demonstrate the possible usages of UXString have many limitations.
 
 - not thread safe
-- single character assignment is not implemented in UXS1, UXS2 and UXS3 but is implemented in UXS4.
+- single character assignment is not implemented in UXS1, UXS2 and UXS3 but is implemented in UXS4 and UXS5.
 - only few API are implemented
 
 ### Future implementations
@@ -155,7 +166,7 @@ Here are some ideas:
 
 ## Tests
 
-One test program [test\_uxstrings1.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings1.adb) is provided for UXStrings tests and an other test program [test\_uxstrings\_text\_io.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings_text_io.adb) is provided for UXStrings.Text\_IO tests.
+Test programs as [test\_uxstrings1.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings1.adb) are provided for UXStrings tests and an other test program [test\_uxstrings\_text\_io.adb](https://github.com/Blady-Com/UXStrings/blob/master/tests/test_uxstrings_text_io.adb) is provided for UXStrings.Text\_IO tests.
 
 ## Dependencies
 
@@ -169,22 +180,26 @@ In your own [Alire](https://alire.ada.dev) project, add UXStrings dependency:
 
 `% alr with uxstrings`
 
-UXStrings with variant choice UXS_VARIANT set to UXS4 is default chosen implementation.
+UXStrings with variant choice UXS_VARIANT set to UXS5 is default chosen implementation.
 
-You might choose an other implementation 1, 2, 3 or 4 by setting variant choice UXS_VARIANT.
+You might choose an other implementation 1, 2, 3, 4 or 5 by setting variant choice UXS_VARIANT.
 
 Then you can import the Ada UXStrings packages in your programs.
 
 Note: Alire will take care of dependencies.
 
+## Authors
+
+- Simple Components are written by Dmitry A. Kazakov ([www.dmitry-kazakov.de/ada/components.htm](https://www.dmitry-kazakov.de/ada/components.htm)). Licence: GPLv2 with generics exception.
+- UXStrings are written by Pascal Pignard ([github.com/Blady-Com/UXStrings](https://github.com/Blady-Com/UXStrings)). The provided UXStrings specifications are intend to be public.
+Constructive criticism and alternative implementations of these specifications are expected.
+
 ## Licence
 
-The provided UXStrings specifications are intend to be public.
-Constructive criticism and alternative implementations of these specifications are expected.
 The actual proposed implementation is under [CeCILL-C](https://cecill.info) licence.
 
 ## Feedbacks
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, April 2021, August 2022, March-October 2023, April-October 2024.
+Pascal Pignard, April 2021, August 2022, March-October 2023, April-October 2024, September 2025.

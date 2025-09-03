@@ -60,10 +60,6 @@ project UXStrings is
       for Default_Switches ("Ada") use ("-Es");
    end Binder;
 
-   package Linker is
-      for Default_Switches ("ada") use ("-Wl,-no_pie");
-   end Linker;
-
    package Pretty_Printer is
       for Default_Switches ("ada") use ("-M120", "-W8", "--comments-unchanged");
    end Pretty_Printer;
