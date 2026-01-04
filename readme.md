@@ -99,7 +99,8 @@ A first proof of concept implementation is provided. The source code files are e
 #### Implementation choices
 
 UTF-8 encoding is chosen for internal representation. The [Strings_Edit library](http://www.dmitry-kazakov.de/ada/strings_edit.htm) is used for UTF-8 encoding management.
-[GNAT.OS_Lib](https://docs.adacore.com/gnat_rm-docs/html/gnat_rm/gnat_rm/the_gnat_library.html#gnat-os-lib-g-os-lib-ads) is chosen for input / output management.
+[GNAT.OS_Lib](https://docs.adacore.com/gnat_rm-docs/html/gnat_rm/gnat_rm/the_gnat_library.html#gnat-os-lib-g-os-lib-ads) is chosen for input / output management. Memory management is done with dynamic allocation.
+
 Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 2
@@ -110,6 +111,7 @@ A second proof of concept implementation is provided. The source code files are 
 
 In addition to implementation UXStrings 1, some API have been added to support ASCII 7 bits encoding. ASCII is a subset of UTF-8 thus no change with the internal representation.
 However, the API are now aware if content is full ASCII. On one hand, this permits to access directly to the position of one character without iterating on UTF-8 characters. Thus this is a time improvement when content is full ASCII. On the other hand, when content is changing the API check if the content is full ASCII. Thus this is a time penalty when changes are not full ASCII.
+
 Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 3
@@ -118,12 +120,18 @@ A third proof of concept implementation is provided. The source code files are e
 
 #### Implementation choices
 
-In addition to implementation UXStrings 1, Unbounded\_Wide\_Wide\_Strings Ada standard package is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with the Unbounded capacity.
+In addition to implementation UXStrings 1, Unbounded\_Wide\_Wide\_Strings Ada standard package is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with the Unbounded facilities.
+
 Note: Iterable is a GNAT specific aspect.
 
 ### UXStrings 4
 
 A fourth proof of concept implementation is provided. The source code files are ending with the number 4 as for instance "uxstrings4.ads". A GNAT project file "uxstrings.gpr" is provided with variant choice UXS_VARIANT set to UXS4 and some naming conventions for both packages UXStrings and UXStrings.Text\_IO.
+
+#### Implementation choices
+
+In addition to implementation UXStrings 1, Ada.Containers.Vectors standard generic package is chosen for internal representation with Wide_Wide_Characters. Memory management is done with the Vector facilities.
+
 Note: Iteration is Ada 2022 native.
 
 ### UXStrings 5 - ***NEW*** -
@@ -133,6 +141,7 @@ A fifth proof of concept implementation is provided. The source code files are e
 #### Implementation choices
 
 In addition to implementation UXStrings 1, Unicode_Character_Array (i.e.Wide\_Wide\_String) is chosen for internal representation. Characters are stored as Wide\_Wide\_Characters equivalent to Unicode. Memory management is done with dynamic allocation.
+
 Note: Iteration is Ada 2022 native.
 
 ### Children units
@@ -202,4 +211,4 @@ The actual proposed implementation is under [CeCILL-C](https://cecill.info) lice
 
 Feel free to send feedback about UXStrings specification source code on [Github](https://github.com/Blady-Com/UXStrings/issues).
 
-Pascal Pignard, April 2021, August 2022, March-October 2023, April-October 2024, September 2025.
+Pascal Pignard, April 2021, August 2022, March-October 2023, April-October 2024, September 2025, May 2026.
