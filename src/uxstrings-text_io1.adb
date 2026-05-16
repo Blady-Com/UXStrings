@@ -204,6 +204,9 @@ package body UXStrings.Text_IO is
          when Append_File =>
             FD := Open_Append (To_UTF_8 (Name), Binary);
       end case;
+      if FD = Invalid_FD then
+         raise Device_Error with "File name: " & To_UTF_8 (Name);
+      end if;
       File := (FD, Mode, Name, Scheme, Ending, others => <>);
    end Create;
 
@@ -225,6 +228,9 @@ package body UXStrings.Text_IO is
          when Append_File =>
             FD := Open_Append (To_UTF_8 (Name), Binary);
       end case;
+      if FD = Invalid_FD then
+         raise Device_Error with "File name: " & To_UTF_8 (Name);
+      end if;
       File := (FD, Mode, Name, Scheme, Ending, others => <>);
    end Open;
 
