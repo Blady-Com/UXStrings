@@ -48,7 +48,7 @@ package body UXStrings is
       if Container'Length = 0 then
          return No_Element;
       end if;
-      return (Container, Container'First);
+      return (Container, 1);
    end First;
 
    ----------
@@ -60,7 +60,7 @@ package body UXStrings is
       if Container'Length = 0 then
          return No_Element;
       else
-         return (Container, Container'Last);
+         return (Container, Container'Length);
       end if;
    end Last;
 
@@ -72,7 +72,7 @@ package body UXStrings is
    begin
       if Position.Container = null then
          return No_Element;
-      elsif Position.Index < Position.Container'Last then
+      elsif Position.Index < Position.Container'Length then
          return (Position.Container, Position.Index + 1);
       else
          return No_Element;
@@ -87,7 +87,7 @@ package body UXStrings is
    begin
       if Position.Container = null then
          return No_Element;
-      elsif Position.Index > Position.Container'First then
+      elsif Position.Index > 1 then
          return (Position.Container, Position.Index - 1);
       else
          return No_Element;
@@ -101,7 +101,7 @@ package body UXStrings is
       if Index > Container.Last then
          raise Constraint_Error with "Index is out of range";
       end if;
-      return (Element => Container.Chars (Index)'Unrestricted_Access);
+      return (Element => Container.Chars (Container.Chars'First + Index - 1)'Unrestricted_Access);
    end Constant_Reference;
 
    function Reference (Container : aliased in out UXString; Index : Positive) return Reference_Type is
@@ -109,7 +109,7 @@ package body UXStrings is
       if Index > Container.Last then
          raise Constraint_Error with "Index is out of range";
       end if;
-      return (Element => Container.Chars (Index)'Unrestricted_Access);
+      return (Element => Container.Chars (Container.Chars'First + Index - 1)'Unrestricted_Access);
    end Reference;
 
    function Constant_Reference (Container : aliased UXString; Position : Cursor) return Constant_Reference_Type is
@@ -117,7 +117,7 @@ package body UXStrings is
       if Position.Index > Container.Last then
          raise Constraint_Error with "Index is out of range";
       end if;
-      return (Element => Container.Chars (Position.Index)'Unrestricted_Access);
+      return (Element => Container.Chars (Container.Chars'First + Position.Index - 1)'Unrestricted_Access);
    end Constant_Reference;
 
    function Reference (Container : aliased in out UXString; Position : Cursor) return Reference_Type is
@@ -125,7 +125,7 @@ package body UXStrings is
       if Position.Index > Container.Last then
          raise Constraint_Error with "Index is out of range";
       end if;
-      return (Element => Container.Chars (Position.Index)'Unrestricted_Access);
+      return (Element => Container.Chars (Container.Chars'First + Position.Index - 1)'Unrestricted_Access);
    end Reference;
 
    type Iterator is new UXString_Iterator_Interfaces.Reversible_Iterator with record
@@ -189,7 +189,7 @@ package body UXStrings is
 
    procedure Replace_Element (Container : in out UXString; Index : Positive; New_Item : Unicode_Character) is
    begin
-      Container.Chars (Index) := New_Item;
+      Container.Chars (Container.Chars'First + Index - 1) := New_Item;
    end Replace_Element;
 
    -- Encoding Scheme cross correspondance
@@ -214,6 +214,7 @@ package body UXStrings is
    begin
       if Object.Chars /= null then
          Object.Chars := new Unicode_Character_Array'(Object.Chars.all);
+         Object.Finalized := False;
       end if;
    end Adjust;
 
@@ -280,7 +281,7 @@ package body UXStrings is
 
    function First (Source : UXString) return Positive is
    begin
-      return Source.Chars'First;
+      return 1;
    end First;
 
    ----------
@@ -307,14 +308,15 @@ package body UXStrings is
 
    function Has_Element (Source : UXString; Index : Positive) return Boolean is
    begin
-      return Index <= Source.Last;
+      return Index <= Length (Source);
    end Has_Element;
 
    -------------
    -- Element --
    -------------
 
-   function Element (Source : UXString; Index : Positive) return Unicode_Character is (Source.Chars (Index));
+   function Element (Source : UXString; Index : Positive) return Unicode_Character is
+     (Source.Chars (Source.Chars'First + Index - 1));
 
    ----------
    -- Last --
@@ -322,7 +324,7 @@ package body UXStrings is
 
    function Last (Source : UXString) return Natural is
    begin
-      return Source.Chars'Last;
+      return Length (Source);
    end Last;
 
    ---------------------------
@@ -626,6 +628,7 @@ package body UXStrings is
       Saved_Access : Unicode_Character_Access := Source.Chars;
    begin
       Source.Chars := new Unicode_Character_Array'(Source.Chars.all & New_Item.Chars.all);
+      Source.Finalized := False;
       if Saved_Access /= null then
          Free (Saved_Access);
       end if;
@@ -639,6 +642,7 @@ package body UXStrings is
       Saved_Access : Unicode_Character_Access := Source.Chars;
    begin
       Source.Chars := new Unicode_Character_Array'(Source.Chars.all & New_Item);
+      Source.Finalized := False;
       if Saved_Access /= null then
          Free (Saved_Access);
       end if;
@@ -652,6 +656,7 @@ package body UXStrings is
       Saved_Access : Unicode_Character_Access := Source.Chars;
    begin
       Source.Chars := new Unicode_Character_Array'(New_Item.Chars.all & Source.Chars.all);
+      Source.Finalized := False;
       if Saved_Access /= null then
          Free (Saved_Access);
       end if;
@@ -665,6 +670,7 @@ package body UXStrings is
       Saved_Access : Unicode_Character_Access := Source.Chars;
    begin
       Source.Chars := new Unicode_Character_Array'(New_Item & Source.Chars.all);
+      Source.Finalized := False;
       if Saved_Access /= null then
          Free (Saved_Access);
       end if;
@@ -737,7 +743,7 @@ package body UXStrings is
 
    function Slice (Source : UXString; Low : Positive; High : Integer) return UXString is
    begin
-      return From_Unicode (Source.Chars.all (Low .. High));
+      return From_Unicode (Source.Chars.all (Source.Chars'First + Low - 1 .. Source.Chars'First + High - 1));
    end Slice;
 
    -----------
@@ -851,7 +857,7 @@ package body UXStrings is
       Mapping : Wide_Wide_Character_Mapping := Identity) return Natural
    is
    begin
-      return Index (Source.Chars.all, Pattern.Chars.all, From, Going, Mapping);
+      return Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
    end Index;
 
    -----------
@@ -863,7 +869,7 @@ package body UXStrings is
       Mapping : Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
-      return Index (Source.Chars.all, Pattern.Chars.all, From, Going, Mapping);
+      return Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
    end Index;
 
    -----------
@@ -875,7 +881,7 @@ package body UXStrings is
       Going  : Direction := Forward) return Natural
    is
    begin
-      return Index (Source.Chars.all, Set, From, Test, Going);
+      return Index (Source.Chars.all, Set, Source.Chars'First + From - 1, Test, Going);
    end Index;
 
    ---------------------
@@ -935,7 +941,9 @@ package body UXStrings is
       Last   : out Natural)
    is
    begin
-      Find_Token (Source.Chars.all, Set, From, Test, First, Last);
+      Find_Token (Source.Chars.all, Set, Source.Chars'First + From - 1, Test, First, Last);
+      First := First + 1 - Source.Chars'First;
+      Last := Last + 1 - Source.Chars'First;
    end Find_Token;
 
    ----------------
