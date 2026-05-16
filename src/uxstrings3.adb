@@ -164,7 +164,7 @@ package body UXStrings is
       end if;
    end To_ASCII;
 
-  ---------------
+   ---------------
    -- Get_ASCII --
    ---------------
 
@@ -538,7 +538,7 @@ package body UXStrings is
    -- Slice --
    -----------
 
-   procedure Slice (Source : UXString; Target : out UXString; Low : Integer; High : Natural) is
+   procedure Slice (Source : UXString; Target : out UXString; Low : Positive; High : Integer) is
    begin
       Target := Slice (Source, Low, High);
    end Slice;
@@ -610,7 +610,7 @@ package body UXStrings is
 
    function Index
      (Source  : UXString; Pattern : UXString; Going : Direction := Forward;
-      Mapping : Wide_Wide_Character_Mapping_Function) return Natural
+      Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
       if Going = Forward then
@@ -654,7 +654,7 @@ package body UXStrings is
 
    function Index
      (Source  : UXString; Pattern : UXString; From : Positive; Going : Direction := Forward;
-      Mapping : Wide_Wide_Character_Mapping_Function) return Natural
+      Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
       return Index (Source.Chars, To_Wide_Wide_String (Pattern.Chars), From, Going, Mapping);
@@ -705,7 +705,7 @@ package body UXStrings is
    -- Count --
    -----------
 
-   function Count (Source : UXString; Pattern : UXString; Mapping : Wide_Wide_Character_Mapping_Function) return Natural
+   function Count (Source : UXString; Pattern : UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
       return Count (Source.Chars, To_Wide_Wide_String (Pattern.Chars), Mapping);
@@ -767,7 +767,7 @@ package body UXStrings is
    -- Translate --
    ---------------
 
-   function Translate (Source : UXString; Mapping : Wide_Wide_Character_Mapping_Function) return UXString is
+   function Translate (Source : UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) return UXString is
    begin
       return UXS : UXString do
          UXS.Chars := Translate (Source.Chars, Mapping);
@@ -778,7 +778,7 @@ package body UXStrings is
    -- Translate --
    ---------------
 
-   procedure Translate (Source : in out UXString; Mapping : Wide_Wide_Character_Mapping_Function) is
+   procedure Translate (Source : in out UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) is
    begin
       Source := Translate (Source, Mapping);
    end Translate;
@@ -1232,9 +1232,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive;
-     Keep_Empty_Parts : Boolean := True)
-      return UXStrings.Lists.UXString_List
+     (Source           : UXString; Separator : Unicode_Character; Sensitivity : Case_Sensitivity := Sensitive;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
    begin
       return Split (Source, From_Unicode (Separator), Sensitivity, Keep_Empty_Parts);
@@ -1245,8 +1244,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive;
-     Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
+     (Source           : UXString; Separator : UXString; Sensitivity : Case_Sensitivity := Sensitive;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
       Result : UXStrings.Lists.UXString_List;
       Ind1   : Positive := Source.First;
@@ -1266,7 +1265,7 @@ package body UXStrings is
             Ind1 := Ind2 + Separator.Length;
          end if;
       end loop;
-      if Ind1 <Source.Last or Keep_Empty_Parts then
+      if Ind1 < Source.Last or Keep_Empty_Parts then
          Result.Append (Source.Slice (Ind1, Source.Last));
       end if;
       return Result;
@@ -1277,8 +1276,8 @@ package body UXStrings is
    -----------
 
    function Split
-     (Source : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside;
-     Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
+     (Source           : UXString; Separator : Wide_Wide_Character_Set; Test : Membership := Inside;
+      Keep_Empty_Parts : Boolean := True) return UXStrings.Lists.UXString_List
    is
       Result : UXStrings.Lists.UXString_List;
       Ind1   : Positive := Source.First;
@@ -1293,9 +1292,9 @@ package body UXStrings is
             Ind1 := Ind2 + 1;
          end if;
       end loop;
-            if Ind1 <Source.Last or Keep_Empty_Parts then
+      if Ind1 < Source.Last or Keep_Empty_Parts then
          Result.Append (Source.Slice (Ind1, Source.Last));
-         end if;
+      end if;
       return Result;
    end Split;
 

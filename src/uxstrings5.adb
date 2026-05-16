@@ -822,7 +822,7 @@ package body UXStrings is
 
    function Index
      (Source  : UXString; Pattern : UXString; Going : Direction := Forward;
-      Mapping : Wide_Wide_Character_Mapping_Function) return Natural
+      Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
       if Going = Forward then
@@ -866,7 +866,7 @@ package body UXStrings is
 
    function Index
      (Source  : UXString; Pattern : UXString; From : Positive; Going : Direction := Forward;
-      Mapping : Wide_Wide_Character_Mapping_Function) return Natural
+      Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
       return Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
@@ -917,7 +917,7 @@ package body UXStrings is
    -- Count --
    -----------
 
-   function Count (Source : UXString; Pattern : UXString; Mapping : Wide_Wide_Character_Mapping_Function) return Natural
+   function Count (Source : UXString; Pattern : UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
    begin
       return Count (Source.Chars.all, Pattern.Chars.all, Mapping);
@@ -979,7 +979,7 @@ package body UXStrings is
    -- Translate --
    ---------------
 
-   function Translate (Source : UXString; Mapping : Wide_Wide_Character_Mapping_Function) return UXString is
+   function Translate (Source : UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) return UXString is
    begin
       return From_Unicode (Translate (Source.Chars.all, Mapping));
    end Translate;
@@ -988,7 +988,7 @@ package body UXStrings is
    -- Translate --
    ---------------
 
-   procedure Translate (Source : in out UXString; Mapping : Wide_Wide_Character_Mapping_Function) is
+   procedure Translate (Source : in out UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) is
    begin
       Source := Translate (Source, Mapping);
    end Translate;
@@ -1028,7 +1028,7 @@ package body UXStrings is
    -- Insert --
    ------------
 
-   procedure Insert (Source : in out UXString; Before : Natural; New_Item : UXString) is
+   procedure Insert (Source : in out UXString; Before : Positive; New_Item : UXString) is
    begin
       Source := Insert (Source, Before, New_Item);
    end Insert;

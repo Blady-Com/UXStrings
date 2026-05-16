@@ -240,7 +240,7 @@ package UXStrings is
    -- with respect of Going direction and Mapping
    function Index
      (Source  : UXString; Pattern : UXString; Going : Direction := Forward;
-      Mapping : Wide_Wide_Character_Mapping_Function) return Natural;
+      Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural;
    -- Return the position of the first character where Pattern matches Source
    -- with respect of Going direction and Mapping
    function Index
@@ -255,7 +255,7 @@ package UXStrings is
    -- with respect of Going direction and Mapping
    function Index
      (Source  : UXString; Pattern : UXString; From : Positive; Going : Direction := Forward;
-      Mapping : Wide_Wide_Character_Mapping_Function) return Natural;
+      Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural;
    -- Return the position of the first character where Pattern matches Source starting at From position
    -- with respect of Going direction and Mapping
    function Index
@@ -274,7 +274,7 @@ package UXStrings is
      (Source : UXString; Pattern : UXString; Mapping : Wide_Wide_Character_Mapping := Identity) return Natural;
    -- Return the number of non overlapping occurrences of Pattern matching Source with respect of Mapping
    function Count
-     (Source : UXString; Pattern : UXString; Mapping : Wide_Wide_Character_Mapping_Function) return Natural;
+     (Source : UXString; Pattern : UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural;
    -- Return the number of non overlapping occurrences of Pattern matching Source with respect of Mapping
    function Count (Source : UXString; Set : Wide_Wide_Character_Set) return Natural;
    -- Return the number of occurrences of characters in parameter Set matching Source
@@ -297,9 +297,9 @@ package UXStrings is
    -- Return Source updated with respect of Mapping
    procedure Translate (Source : in out UXString; Mapping : Wide_Wide_Character_Mapping);
    -- Update Source with respect of Mapping
-   function Translate (Source : UXString; Mapping : Wide_Wide_Character_Mapping_Function) return UXString;
+   function Translate (Source : UXString; Mapping : not null Wide_Wide_Character_Mapping_Function) return UXString;
    -- Return Source updated with respect of Mapping
-   procedure Translate (Source : in out UXString; Mapping : Wide_Wide_Character_Mapping_Function);
+   procedure Translate (Source : in out UXString; Mapping : not null Wide_Wide_Character_Mapping_Function);
    -- Update Source with respect of Mapping
 
    ---------------------------------------
@@ -312,16 +312,16 @@ package UXStrings is
    -- Update Source whom characters with positions from Low to High are replaced with parameter By
    function Insert (Source : UXString; Before : Positive; New_Item : UXString) return UXString;
    -- Return Source with New_Item inserted at position ahead of parameter Before
-   procedure Insert (Source : in out UXString; Before : Natural; New_Item : UXString);
+   procedure Insert (Source : in out UXString; Before : Positive; New_Item : UXString);
    -- Update Source with New_Item inserted at position ahead of parameter Before
    function Overwrite (Source : UXString; Position : Positive; New_Item : UXString) return UXString;
    -- Return Source whom characters starting at Position are replaced with parameter New_Item
    procedure Overwrite (Source : in out UXString; Position : Positive; New_Item : UXString);
    -- Update Source whom characters starting at Position are replaced with parameter New_Item
    function Delete (Source : UXString; From : Positive; Through : Natural) return UXString;
-   -- Return Source whom characters with positions from Low to High are removed
+   -- Return Source whom characters with positions from From to Through are removed
    procedure Delete (Source : in out UXString; From : Positive; Through : Natural);
-   -- Update Source whom characters with positions from Low to High are removed
+   -- Update Source whom characters with positions from From to Through are removed
    function Trim (Source : UXString; Side : Trim_End) return UXString;
    -- Return Source with Space characters removed from left, right or both with respect of Side
    procedure Trim (Source : in out UXString; Side : Trim_End);
