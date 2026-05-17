@@ -139,17 +139,10 @@ package body UXStrings is
    ------------------
 
    procedure Bounded_Move (Source : in out UXString; Target : out UXString; Max : Natural; Last : out Natural) is
-      Item    : UTF8_Code_Point;
-      Pointer : Integer := Source.Chars'First;
-      Count   : Natural := 0;
    begin
-      while Pointer <= Source.Chars'First + Max - 1 and Pointer <= Source.Chars'Last loop
-         Get (Source.Chars.all, Pointer, Item);
-         Count := Count + 1;
-      end loop;
-      Target := Source.Slice (1, Count);
-      Delete (Source, 1, Count);
-      Last := Target.Chars.all'Length;
+      Last   := Natural'Min (Source.Last, Max);
+      Target := Source.Slice (1, Last);
+      Delete (Source, 1, Last);
    end Bounded_Move;
 
    -- UXStrings API implementation

@@ -259,7 +259,7 @@ package body UXStrings is
 
    procedure Bounded_Move (Source : in out UXString; Target : out UXString; Max : Natural; Last : out Natural) is
    begin
-      Last   := Natural'Min (Target.Last, Max);
+      Last   := Natural'Min (Source.Last, Max);
       Target := Source.Slice (1, Last);
       Delete (Source, 1, Last);
    end Bounded_Move;
