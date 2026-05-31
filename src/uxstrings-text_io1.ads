@@ -1,10 +1,10 @@
+with Ada.IO_Exceptions;
 with UXStrings.Lists;
 private with GNAT.OS_Lib;
 
 package UXStrings.Text_IO is
 
    type File_Type is limited private;
-   type File_Access is access all File_Type;
 
    type File_Mode is (In_File, Out_File, Append_File);
 
@@ -30,9 +30,9 @@ package UXStrings.Text_IO is
    function Mode (File : in File_Type) return File_Mode;
    function Name (File : in File_Type) return UXString;
    function Scheme (File : in File_Type) return Encoding_Scheme;
-   procedure Scheme (File : in File_Access; Value : in Encoding_Scheme);
+   procedure Scheme (File : in File_Type; Value : in Encoding_Scheme);
    function Ending (File : in File_Type) return Line_Ending;
-   procedure Ending (File : in File_Access; Value : Line_Ending);
+   procedure Ending (File : in File_Type; Value : Line_Ending);
 
    function Is_Open (File : in File_Type) return Boolean;
 
@@ -49,6 +49,8 @@ package UXStrings.Text_IO is
    function Current_Input return File_Type;
    function Current_Output return File_Type;
    function Current_Error return File_Type;
+
+   type File_Access is access constant File_Type;
 
    function Standard_Input return File_Access;
    function Standard_Output return File_Access;
@@ -82,10 +84,10 @@ package UXStrings.Text_IO is
    procedure New_Line (File : in File_Type; Spacing : in Positive_Count := 1);
    procedure New_Line (Spacing : in Positive_Count := 1);
 
-   procedure Skip_Line (File : in out File_Type; Spacing : in Positive_Count := 1);
+   procedure Skip_Line (File : in File_Type; Spacing : in Positive_Count := 1);
    procedure Skip_Line (Spacing : in Positive_Count := 1);
 
-   function End_Of_Line (File : in out File_Type) return Boolean;
+   function End_Of_Line (File : in File_Type) return Boolean;
    function End_Of_Line return Boolean;
 
    function Line_Mark return UXString;
@@ -102,7 +104,7 @@ package UXStrings.Text_IO is
 
    function Page_Mark return UXString;
 
-   function End_Of_File (File : in out File_Type) return Boolean;
+   function End_Of_File (File : in File_Type) return Boolean;
    function End_Of_File return Boolean;
 
    procedure Set_Col (File : in File_Type; To : in Positive_Count);
@@ -127,42 +129,42 @@ package UXStrings.Text_IO is
 
    -- Unicode Character Input-Output
 
-   procedure Get (File : in out File_Type; Item : out Unicode_Character);
+   procedure Get (File : in File_Type; Item : out Unicode_Character);
    procedure Get (Item : out Unicode_Character);
 
    procedure Put (File : in File_Type; Item : in Unicode_Character);
    procedure Put (Item : in Unicode_Character);
 
-   procedure Look_Ahead (File : in out File_Type; Item : out Unicode_Character; End_Of_Line : out Boolean);
+   procedure Look_Ahead (File : in File_Type; Item : out Unicode_Character; End_Of_Line : out Boolean);
    procedure Look_Ahead (Item : out Unicode_Character; End_Of_Line : out Boolean);
 
-   procedure Get_Immediate (File : in out File_Type; Item : out Unicode_Character);
+   procedure Get_Immediate (File : in File_Type; Item : out Unicode_Character);
    procedure Get_Immediate (Item : out Unicode_Character);
 
-   procedure Get_Immediate (File : in out File_Type; Item : out Unicode_Character; Available : out Boolean);
+   procedure Get_Immediate (File : in File_Type; Item : out Unicode_Character; Available : out Boolean);
    procedure Get_Immediate (Item : out Unicode_Character; Available : out Boolean);
 
    -- Unicode String Input-Output
 
-   procedure Get (File : in out File_Type; Item : out UXString; Length : in Count);
+   procedure Get (File : in File_Type; Item : out UXString; Length : in Count);
    procedure Get (Item : out UXString; Length : in Count);
 
    procedure Put (File : in File_Type; Item : in UXString);
    procedure Put (Item : in UXString);
 
-   procedure Get_Line (File : in out File_Type; Item : out UXString);
+   procedure Get_Line (File : in File_Type; Item : out UXString);
    procedure Get_Line (Item : out UXString);
 
-   function Get_Line (File : in out File_Type) return UXString;
+   function Get_Line (File : in File_Type) return UXString;
    function Get_Line return UXString;
 
    procedure Put_Line (File : in File_Type; Item : in UXString);
    procedure Put_Line (Item : in UXString);
 
-   procedure Get_Text (File : in out File_Type; Item : out UXStrings.Lists.UXString_List; Count : Natural := 0);
+   procedure Get_Text (File : in File_Type; Item : out UXStrings.Lists.UXString_List; Count : Natural := 0);
    procedure Get_Text (Item : out UXStrings.Lists.UXString_List; Count : Natural := 0);
 
-   function Get_Text (File : in out File_Type; Count : Natural := 0) return UXStrings.Lists.UXString_List;
+   function Get_Text (File : in File_Type; Count : Natural := 0) return UXStrings.Lists.UXString_List;
    function Get_Text (Count : Natural := 0) return UXStrings.Lists.UXString_List;
 
    procedure Put_Text (File : in File_Type; Item : in UXStrings.Lists.UXString_List);
@@ -172,19 +174,19 @@ package UXStrings.Text_IO is
    -- Exceptions --
    ----------------
 
-   Status_Error : exception;
-   Mode_Error   : exception;
-   Name_Error   : exception;
-   Use_Error    : exception;
-   Device_Error : exception;
-   End_Error    : exception;
-   Data_Error   : exception;
-   Layout_Error : exception;
+   Status_Error : exception renames Ada.IO_Exceptions.Status_Error;
+   Mode_Error   : exception renames Ada.IO_Exceptions.Mode_Error;
+   Name_Error   : exception renames Ada.IO_Exceptions.Name_Error;
+   Use_Error    : exception renames Ada.IO_Exceptions.Use_Error;
+   Device_Error : exception renames Ada.IO_Exceptions.Device_Error;
+   End_Error    : exception renames Ada.IO_Exceptions.End_Error;
+   Data_Error   : exception renames Ada.IO_Exceptions.Data_Error;
+   Layout_Error : exception renames Ada.IO_Exceptions.Layout_Error;
 
 private
 
    type String_Access is access String;
-   type File_Type is record
+   type Text_File_Type is record
       FD     : GNAT.OS_Lib.File_Descriptor := GNAT.OS_Lib.Invalid_FD;
       Mode   : File_Mode;
       Name   : UXString;
@@ -193,8 +195,9 @@ private
       Buffer : String_Access               := new String'("");
       EOF    : Boolean                     := False;
    end record;
+   type File_Type is access all Text_File_Type;
 
-   procedure Read_Stream (File : in out File_Type; Item : out UTF_8_Character_Array; Last : out Natural);
-   procedure Write_Stream (File : in out File_Type; Item : UTF_8_Character_Array);
+   procedure Read_Stream (File : in File_Type; Item : out UTF_8_Character_Array; Last : out Natural);
+   procedure Write_Stream (File : in File_Type; Item : UTF_8_Character_Array);
 
 end UXStrings.Text_IO;

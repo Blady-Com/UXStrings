@@ -2,9 +2,9 @@
 -- NAME (body)                  : uxstrings-text_io1.adb
 -- AUTHOR                       : Pascal Pignard
 -- ROLE                         : Text input / output implementation for UXString.
--- NOTES                        : Ada 202x
+-- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2023
+-- COPYRIGHT                    : (c) Pascal Pignard 2026
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.chez.com
 -------------------------------------------------------------------------------
@@ -16,9 +16,9 @@ package body UXStrings.Text_IO is
 
    use GNAT.OS_Lib;
 
-   Std_In  : aliased File_Type := (Standin, In_File, "sdtin", Latin_1, CRLF_Ending, others => <>);
-   Std_Out : aliased File_Type := (Standout, Out_File, "sdtout", Latin_1, CRLF_Ending, others => <>);
-   Std_Err : aliased File_Type := (Standerr, Out_File, "sdterr", Latin_1, CRLF_Ending, others => <>);
+   Std_In  : aliased File_Type := new Text_File_Type'(Standin, In_File, "sdtin", Latin_1, CRLF_Ending, others => <>);
+   Std_Out : aliased File_Type := new Text_File_Type'(Standout, Out_File, "sdtout", Latin_1, CRLF_Ending, others => <>);
+   Std_Err : aliased File_Type := new Text_File_Type'(Standerr, Out_File, "sdterr", Latin_1, CRLF_Ending, others => <>);
 
    Cur_In  : aliased File_Type := Std_In;
    Cur_Out : aliased File_Type := Std_Out;
@@ -30,7 +30,7 @@ package body UXStrings.Text_IO is
    -- Truncate_Buffer --
    ---------------------
 
-   procedure Truncate_Buffer (File : in out File_Type; From : Positive) is
+   procedure Truncate_Buffer (File : in File_Type; From : Positive) is
       Saved_Access : String_Access := File.Buffer;
       procedure Free is new Ada.Unchecked_Deallocation (String, String_Access);
       pragma Warnings (Off, Saved_Access);
@@ -44,7 +44,7 @@ package body UXStrings.Text_IO is
    -- Add_Buffer --
    ----------------
 
-   procedure Add_Buffer (File : in out File_Type; Buffer : String) is
+   procedure Add_Buffer (File : in File_Type; Buffer : String) is
       Saved_Access : String_Access := File.Buffer;
       procedure Free is new Ada.Unchecked_Deallocation (String, String_Access);
       pragma Warnings (Off, Saved_Access);
@@ -57,7 +57,7 @@ package body UXStrings.Text_IO is
    -- Read_More --
    ---------------
 
-   procedure Read_More (File : in out File_Type) is
+   procedure Read_More (File : in File_Type) is
       Buffer_Size : constant := 200;
       subtype Buffer_Type is String (1 .. Buffer_Size);
       Buffer : Buffer_Type;
@@ -73,8 +73,7 @@ package body UXStrings.Text_IO is
    -- Step --
    ----------
 
-   procedure Step
-     (File : in out File_Type; Pointer : in out Positive; Available : out Boolean; End_Of_line : out Boolean)
+   procedure Step (File : in File_Type; Pointer : in out Positive; Available : out Boolean; End_Of_line : out Boolean)
    is
       subtype Offset_Type is Integer range -1 .. 1;
       subtype Size_Type is Positive range 1 .. 2;
@@ -164,7 +163,7 @@ package body UXStrings.Text_IO is
    -- Read_Stream --
    -----------------
 
-   procedure Read_Stream (File : in out File_Type; Item : out UTF_8_Character_Array; Last : out Natural) is
+   procedure Read_Stream (File : in File_Type; Item : out UTF_8_Character_Array; Last : out Natural) is
    begin
       while File.Buffer'Length < Item'Length and not File.EOF loop
          Read_More (File);
@@ -180,7 +179,7 @@ package body UXStrings.Text_IO is
    -- Write_Stream --
    -----------------
 
-   procedure Write_Stream (File : in out File_Type; Item : UTF_8_Character_Array) is
+   procedure Write_Stream (File : in File_Type; Item : UTF_8_Character_Array) is
       Dummy_Result : Integer;
    begin
       Dummy_Result := Write (File.FD, Item'Address, Item'Length);
@@ -207,7 +206,7 @@ package body UXStrings.Text_IO is
       if FD = Invalid_FD then
          raise Device_Error with "File name: " & To_UTF_8 (Name);
       end if;
-      File := (FD, Mode, Name, Scheme, Ending, others => <>);
+      File := new Text_File_Type'(FD, Mode, Name, Scheme, Ending, others => <>);
    end Create;
 
    ----------
@@ -231,7 +230,7 @@ package body UXStrings.Text_IO is
       if FD = Invalid_FD then
          raise Device_Error with "File name: " & To_UTF_8 (Name);
       end if;
-      File := (FD, Mode, Name, Scheme, Ending, others => <>);
+      File := new Text_File_Type'(FD, Mode, Name, Scheme, Ending, others => <>);
    end Open;
 
    -----------
@@ -239,8 +238,12 @@ package body UXStrings.Text_IO is
    -----------
 
    procedure Close (File : in out File_Type) is
+      procedure Free is new Ada.Unchecked_Deallocation (String, String_Access);
+      procedure Free is new Ada.Unchecked_Deallocation (Text_File_Type, File_Type);
    begin
       Close (File.FD);
+      Free (File.Buffer);
+      Free (File);
    end Close;
 
    ------------
@@ -300,7 +303,7 @@ package body UXStrings.Text_IO is
       return File.Scheme;
    end Scheme;
 
-   procedure Scheme (File : in File_Access; Value : in Encoding_Scheme) is
+   procedure Scheme (File : in File_Type; Value : in Encoding_Scheme) is
    begin
       File.Scheme := Value;
    end Scheme;
@@ -314,7 +317,7 @@ package body UXStrings.Text_IO is
       return File.Ending;
    end Ending;
 
-   procedure Ending (File : in File_Access; Value : Line_Ending) is
+   procedure Ending (File : in File_Type; Value : Line_Ending) is
    begin
       File.Ending := Value;
    end Ending;
@@ -602,7 +605,7 @@ package body UXStrings.Text_IO is
    -- Skip_Line --
    ---------------
 
-   procedure Skip_Line (File : in out File_Type; Spacing : in Positive_Count := 1) is
+   procedure Skip_Line (File : in File_Type; Spacing : in Positive_Count := 1) is
       Pointer   : Positive;
       Available : Boolean;
       EOL       : Boolean := False;
@@ -637,7 +640,7 @@ package body UXStrings.Text_IO is
    -- End_Of_Line --
    -----------------
 
-   function End_Of_Line (File : in out File_Type) return Boolean is
+   function End_Of_Line (File : in File_Type) return Boolean is
       Pointer   : Positive;
       Available : Boolean;
       EOL       : Boolean;
@@ -751,7 +754,7 @@ package body UXStrings.Text_IO is
    -- End_Of_File --
    -----------------
 
-   function End_Of_File (File : in out File_Type) return Boolean is
+   function End_Of_File (File : in File_Type) return Boolean is
       Pointer   : Positive;
       Available : Boolean;
       EOL       : Boolean;
@@ -907,7 +910,7 @@ package body UXStrings.Text_IO is
    -- Get --
    ---------
 
-   procedure Get (File : in out File_Type; Item : out Unicode_Character) is
+   procedure Get (File : in File_Type; Item : out Unicode_Character) is
       Previous, Current : Positive;
       Available         : Boolean;
       EOL               : Boolean;
@@ -998,7 +1001,7 @@ package body UXStrings.Text_IO is
    -- Look_Ahead --
    ----------------
 
-   procedure Look_Ahead (File : in out File_Type; Item : out Unicode_Character; End_Of_Line : out Boolean) is
+   procedure Look_Ahead (File : in File_Type; Item : out Unicode_Character; End_Of_Line : out Boolean) is
       Pointer   : Positive;
       Available : Boolean;
    begin
@@ -1039,7 +1042,7 @@ package body UXStrings.Text_IO is
    -- Get_Immediate --
    -------------------
 
-   procedure Get_Immediate (File : in out File_Type; Item : out Unicode_Character) is
+   procedure Get_Immediate (File : in File_Type; Item : out Unicode_Character) is
       Pointer   : Positive;
       Available : Boolean;
       EOL       : Boolean;
@@ -1081,7 +1084,7 @@ package body UXStrings.Text_IO is
    -- Get_Immediate --
    -------------------
 
-   procedure Get_Immediate (File : in out File_Type; Item : out Unicode_Character; Available : out Boolean) is
+   procedure Get_Immediate (File : in File_Type; Item : out Unicode_Character; Available : out Boolean) is
       Pointer : Positive;
       EOL     : Boolean;
    begin
@@ -1122,7 +1125,7 @@ package body UXStrings.Text_IO is
    -- Get --
    ---------
 
-   procedure Get (File : in out File_Type; Item : out UXString; Length : in Count) is
+   procedure Get (File : in File_Type; Item : out UXString; Length : in Count) is
       Ch : Unicode_Character;
    begin
       for Ind in 1 .. Length loop
@@ -1188,7 +1191,7 @@ package body UXStrings.Text_IO is
    -- Get_Line --
    --------------
 
-   procedure Get_Line (File : in out File_Type; Item : out UXString) is
+   procedure Get_Line (File : in File_Type; Item : out UXString) is
       Pointer   : Positive;
       Available : Boolean;
       EOL       : Boolean;
@@ -1241,7 +1244,7 @@ package body UXStrings.Text_IO is
    -- Get_Line --
    --------------
 
-   function Get_Line (File : in out File_Type) return UXString is
+   function Get_Line (File : in File_Type) return UXString is
    begin
       return Line : UXString do
          Get_Line (File, Line);
@@ -1280,7 +1283,7 @@ package body UXStrings.Text_IO is
    -- Get_Text --
    --------------
 
-   procedure Get_Text (File : in out File_Type; Item : out UXStrings.Lists.UXString_List; Count : Natural := 0) is
+   procedure Get_Text (File : in File_Type; Item : out UXStrings.Lists.UXString_List; Count : Natural := 0) is
       Line_Count : Natural := 0;
    begin
       Item.Clear;
@@ -1303,7 +1306,7 @@ package body UXStrings.Text_IO is
    -- Get_Text --
    --------------
 
-   function Get_Text (File : in out File_Type; Count : Natural := 0) return UXStrings.Lists.UXString_List is
+   function Get_Text (File : in File_Type; Count : Natural := 0) return UXStrings.Lists.UXString_List is
    begin
       return Text : UXStrings.Lists.UXString_List do
          Get_Text (File, Text, Count);

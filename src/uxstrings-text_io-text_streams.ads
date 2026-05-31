@@ -9,7 +9,7 @@ package UXStrings.Text_IO.Text_Streams is
 private
 
    type Stream_File is new Ada.Streams.Root_Stream_Type with record
-      File : File_Access;
+      File : File_Type;
    end record;
 
    use Ada.Streams;
