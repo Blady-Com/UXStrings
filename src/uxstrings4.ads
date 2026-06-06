@@ -45,8 +45,10 @@ package UXStrings is
    type UXString is tagged private with
      Constant_Indexing => Constant_Reference, Variable_Indexing => Reference, Default_Iterator => Iterate,
      Iterator_Element  => Unicode_Character,
-     Aggregate => (Empty => Empty, Add_Unnamed => Append, New_Indexed => New_Vector, Assign_Indexed => Replace_Element),
-     String_Literal    => From_Unicode;
+     Aggregate         =>
+      (Empty          => UXS_Empty, Add_Unnamed => UXS_Append, New_Indexed => UXS_New_Vector,
+       Assign_Indexed => UXS_Replace_Element),
+     String_Literal => From_Unicode;
    -- Container type of Unicode characters with dynamic size usually named string
 
    function Constant_Reference
@@ -60,9 +62,10 @@ package UXStrings is
    function Iterate
      (Container : UXString; Start : UXString_Vector.Cursor)
       return UXString_Vector.Vector_Iterator_Interfaces.Reversible_Iterator'Class;
-   function Empty (Capacity : Natural := 10) return UXString;
-   function New_Vector (First, Last : Positive) return UXString;
-   procedure Replace_Element (Container : in out UXString; Index : Positive; New_Item : Unicode_Character);
+   function UXS_Empty (Capacity : Natural := 10) return UXString;
+   procedure UXS_Append (Source : in out UXString; New_Item : Unicode_Character);
+   function UXS_New_Vector (First, Last : Positive) return UXString;
+   procedure UXS_Replace_Element (Container : in out UXString; Index : Positive; New_Item : Unicode_Character);
    function To_Index (Position : UXString_Vector.Cursor) return Natural;
 
    Null_UXString : constant UXString;
@@ -383,7 +386,7 @@ package UXStrings is
    -- Return True if Source is uppercase
 
    function Is_Basic (Source : UXString) return Boolean;
-   -- Return True if source is basic (with no diacritical mark)
+   -- Return True if Source is basic (with no diacritical mark)
 
    function Is_Empty (Source : UXString) return Boolean;
    -- Return True is Source is empty (equal to Null_UXString)

@@ -46,8 +46,9 @@ package UXStrings is
    type UXString is tagged private with
      Constant_Indexing => Constant_Reference, Variable_Indexing => Reference, Default_Iterator => Iterate,
      Iterator_Element  => Unicode_Character,
-     Aggregate => (Empty => Empty, Add_Unnamed => Append, New_Indexed => New_String, Assign_Indexed => Replace_Element),
-     String_Literal    => From_Unicode;
+     Aggregate         =>
+      (Empty => Empty, Add_Unnamed => Append_Element, New_Indexed => New_String, Assign_Indexed => Replace_Element),
+     String_Literal => From_Unicode;
    -- Container type of Unicode characters with dynamic size usually named string
 
    type Cursor is private;
@@ -191,6 +192,7 @@ package UXStrings is
    -- Update Source to the concatenation of Source and New_Item
    procedure Append (Source : in out UXString; New_Item : Unicode_Character);
    -- Update Source to the concatenation of Source and New_Item
+   procedure Append_Element (Source : in out UXString; New_Item : Unicode_Character) renames Append;
 
    procedure Prepend (Source : in out UXString; New_Item : UXString);
    -- Update Source to the concatenation of New_Item and Source

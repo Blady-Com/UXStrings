@@ -4,7 +4,7 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2025
+-- COPYRIGHT                    : (c) Pascal Pignard 2026
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.chez.com
 -------------------------------------------------------------------------------
@@ -20,40 +20,39 @@ with UXStrings.Lists;
 
 package body UXStrings is
 
-   use UXString_Vector;
+   use type UXString_Vector.Vector;
 
    function Constant_Reference
-     (Container : aliased UXString; Position : UXString_Vector.Cursor) return Constant_Reference_Type is
-     (Constant_Reference (Vector (Container), Position));
+     (Container : aliased UXString; Position : UXString_Vector.Cursor) return UXString_Vector.Constant_Reference_Type is
+     (UXString_Vector.Constant_Reference (UXString_Vector.Vector (Container), Position));
 
-   function Reference (Container : aliased in out UXString; Position : UXString_Vector.Cursor) return Reference_Type is
-     (Reference (Vector (Container), Position));
+   function Reference (Container : aliased in out UXString; Position : UXString_Vector.Cursor) return UXString_Vector.Reference_Type is
+     (UXString_Vector.Reference (UXString_Vector.Vector (Container), Position));
 
-   function Constant_Reference (Container : aliased UXString; Index : Positive) return Constant_Reference_Type is
-     (Constant_Reference (Vector (Container), Index));
+   function Constant_Reference (Container : aliased UXString; Index : Positive) return UXString_Vector.Constant_Reference_Type is
+     (UXString_Vector.Constant_Reference (UXString_Vector.Vector (Container), Index));
 
-   function Reference (Container : aliased in out UXString; Index : Positive) return Reference_Type is
-     (Reference (Vector (Container), Index));
+   function Reference (Container : aliased in out UXString; Index : Positive) return UXString_Vector.Reference_Type is
+     (UXString_Vector.Reference (UXString_Vector.Vector (Container), Index));
 
    function Iterate
      (Container : UXString) return UXString_Vector.Vector_Iterator_Interfaces.Reversible_Iterator'Class is
-     (Iterate (Vector (Container)));
+     (UXString_Vector.Iterate (UXString_Vector.Vector (Container)));
 
    function Iterate
      (Container : UXString; Start : UXString_Vector.Cursor)
       return UXString_Vector.Vector_Iterator_Interfaces.Reversible_Iterator'Class is
-     (Iterate (Vector (Container)));
+     (UXString_Vector.Iterate (UXString_Vector.Vector (Container)));
 
-   function Empty (Capacity : Natural := 10) return UXString is
+   function UXS_Empty (Capacity : Natural := 10) return UXString is
      (UXString_Vector.Empty (Ada.Containers.Count_Type (Capacity)) with null record);
 
-   function New_Vector (First, Last : Positive) return UXString is
+   procedure UXS_Append (Source : in out UXString; New_Item : Unicode_Character) renames Append;
+
+   function UXS_New_Vector (First, Last : Positive) return UXString is
      (UXString_Vector.New_Vector (First, Last) with null record);
 
-   procedure Replace_Element (Container : in out UXString; Index : Positive; New_Item : Unicode_Character) is
-   begin
-      Replace_Element (Vector (Container), Index, New_Item);
-   end Replace_Element;
+   procedure UXS_Replace_Element (Container : in out UXString; Index : Positive; New_Item : Unicode_Character) renames Replace_Unicode;
 
    function To_Index (Position : UXString_Vector.Cursor) return Natural is (UXString_Vector.To_Index (Position));
 
@@ -104,9 +103,10 @@ package body UXStrings is
       return UXS : UXString := (UXString_Vector.To_Vector (Source'Length) with null record) do
          for Ind in Source'Range loop
             UXS (Ind - Source'First + 1) := Source (Ind);
+            -- Translation of UXS index as we don't know about Source index
          end loop;
       end return;
-      --  return (UXString_Vector.vector'([for E of Source => E]) with null record); -- error: found type "Standard.Integer"
+      --  return (UXString_Vector.Vector'([for E of Source => E]) with null record); -- error: found type "Standard.Integer"
    end To_Vector;
 
    -------------------------
@@ -116,6 +116,7 @@ package body UXStrings is
    function To_Wide_Wide_String (Source : UXString) return Wide_Wide_String is
    begin
       return WWS : Wide_Wide_String (1 .. Source.Length) do
+         -- The Index 1 of WWS is thus the same for Source
          for Ind in WWS'Range loop
             WWS (Ind) := Source (Ind);
          end loop;
@@ -131,7 +132,7 @@ package body UXStrings is
 
    function Length (Source : UXString) return Natural is
    begin
-      return Natural (Length (UXString_Vector.Vector (Source)));
+      return Natural (UXString_Vector.Vector (Source).Length);
    end Length;
 
    -----------
@@ -175,7 +176,8 @@ package body UXStrings is
    -------------
 
    function Element (Source : UXString; Index : Positive) return Unicode_Character is
-     (Element (UXString_Vector.Vector (Source), Index));
+      -- The Index 1 of Source is also the same for Vector
+     (UXString_Vector.Vector (Source).Element( Index));
 
    ----------
    -- Last --
@@ -401,7 +403,7 @@ package body UXStrings is
 
    function Get_Unicode (Source : UXString; Index : Positive) return Unicode_Character is
    begin
-      return Element (Source, Index);
+      return Source (Index);
    end Get_Unicode;
 
    ----------------
@@ -486,7 +488,7 @@ package body UXStrings is
 
    procedure Append (Source : in out UXString; New_Item : UXString) is
    begin
-      Append (Vector (Source), Vector (New_Item));
+      UXString_Vector.Append (UXString_Vector.Vector (Source), UXString_Vector.Vector (New_Item));
    end Append;
 
    ------------
@@ -495,7 +497,7 @@ package body UXStrings is
 
    procedure Append (Source : in out UXString; New_Item : Unicode_Character) is
    begin
-      Append (Vector (Source), New_Item);
+      UXString_Vector.Append (UXString_Vector.Vector (Source), New_Item);
    end Append;
 
    -------------
@@ -504,7 +506,7 @@ package body UXStrings is
 
    procedure Prepend (Source : in out UXString; New_Item : UXString) is
    begin
-      Prepend (Vector (Source), Vector (New_Item));
+      UXString_Vector.Prepend (UXString_Vector.Vector (Source), UXString_Vector.Vector (New_Item));
    end Prepend;
 
    -------------
@@ -513,7 +515,7 @@ package body UXStrings is
 
    procedure Prepend (Source : in out UXString; New_Item : Unicode_Character) is
    begin
-      Prepend (Vector (Source), New_Item);
+      UXString_Vector.Prepend (UXString_Vector.Vector (Source), New_Item);
    end Prepend;
 
    ---------
@@ -522,7 +524,7 @@ package body UXStrings is
 
    function "&" (Left : UXString; Right : UXString) return UXString is
    begin
-      return (Vector (Left) & Vector (Right) with null record);
+      return (UXString_Vector.Vector (Left) & UXString_Vector.Vector (Right) with null record);
    end "&";
 
    ---------
@@ -531,7 +533,7 @@ package body UXStrings is
 
    function "&" (Left : UXString; Right : Unicode_Character) return UXString is
    begin
-      return ((Vector (Left) & Right) with null record);
+      return ((UXString_Vector.Vector (Left) & Right) with null record);
    end "&";
 
    ---------
@@ -540,7 +542,7 @@ package body UXStrings is
 
    function "&" (Left : Unicode_Character; Right : UXString) return UXString is
    begin
-      return ((Left & Vector (Right)) with null record);
+      return ((Left & UXString_Vector.Vector (Right)) with null record);
    end "&";
 
    -------------------
@@ -601,7 +603,7 @@ package body UXStrings is
 
    function "=" (Left : UXString; Right : UXString) return Boolean is
    begin
-      return Vector (Left) = Vector (Right);
+      return UXString_Vector.Vector (Left) = UXString_Vector.Vector (Right);
    end "=";
 
    ---------
@@ -860,7 +862,7 @@ package body UXStrings is
    function Insert (Source : UXString; Before : Positive; New_Item : UXString) return UXString is
    begin
       return UXS : UXString := Source do
-         Insert (Vector (UXS), Before, Vector (New_Item));
+         UXString_Vector.Insert (UXString_Vector.Vector (UXS), Before, UXString_Vector.Vector (New_Item));
       end return;
    end Insert;
 
@@ -870,7 +872,7 @@ package body UXStrings is
 
    procedure Insert (Source : in out UXString; Before : Natural; New_Item : UXString) is
    begin
-      Insert (Vector (Source), Before, Vector (New_Item));
+      UXString_Vector.Insert (UXString_Vector.Vector (Source), Before, UXString_Vector.Vector (New_Item));
    end Insert;
 
    ---------------
@@ -1151,7 +1153,7 @@ package body UXStrings is
 
    function Is_Empty (Source : UXString) return Boolean is
    begin
-      return Source = Null_UXString;
+      return UXString_Vector.Is_Empty (UXString_Vector.Vector (Source));
    end Is_Empty;
 
    ------------
