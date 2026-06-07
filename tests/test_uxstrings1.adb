@@ -36,7 +36,7 @@ procedure Test_UXStrings1 is
    --     Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
 
    UXSL1 : constant UXStrings.Lists.UXString_List := ["Ada", "Strings", "Wide_Wide_Maps", "Wide_Wide_Constants", "Lower_Case_Map"];
- 
+
    S4 : constant UXString := "Ada.Strings.Wide_Wide_Maps.Is_Subset(Item, My_Set)";
    S5 : constant UXString := "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/Current/lib/libpython3.9.dylib";
 
@@ -80,25 +80,28 @@ begin
       Image (Wide_Wide_Character'Pos (WWC), 16));
    for I in S3 loop
       F := S3.Get_Latin_1 (I) = 'é';
---        if F then
---           Replace_Latin_1 (S2 ,I, 'e');
---        end if;
+      if F then
+         Replace_Latin_1 (S3 ,I, 'e');
+      end if;
       WWC := S3 (I);
       Put_Line (Image (I) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
+   Put_Line (S3);
    for CC of S2 loop
       WWC := CC;
       F   := CC = 'é';
       Put_Line (Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
---     Replace_Unicode (S1 ,3, WWC);
---     S1.Replace_BMP (2, WC);
---     S1.Replace_Latin_1 (1, C);
---     Put_Line (S1);
+   Replace_Unicode (S1 ,3, WWC);
+   S1.Replace_BMP (2, WC);
+   S1.Replace_Latin_1 (1, C);
+   S1.Replace_ASCII (4, 'Z');
+   Put_Line (S1);
    if S1 /= "test" then
       S1 := Null_UXString;
       S2 := 2 * 'z';
       S3 := 4 * "po";
+      Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    end if;
    S3 := "Riri";
    S2 := "Loulou";
@@ -120,6 +123,12 @@ begin
       Put_Line (E);
    end loop;
    Put_Line (UXSL1.Join ('-').To_Lower);
+
+   declare
+      A : constant UXStrings.Lists.UXString_Array := UXStrings.Lists.From_UXString_List (UXSL1);
+   begin
+      Put_Line ("First item: " & A(1));
+   end;
 
    declare
       use UXStrings.Formatting;

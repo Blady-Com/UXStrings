@@ -88,7 +88,7 @@ begin
    Put_Line
      (Image (Character'Pos (C), 16) & ',' & Image (Wide_Character'Pos (WC), 16) & ',' &
       Image (Wide_Wide_Character'Pos (WWC), 16));
-   for I in S3.Iterate loop
+   for I in S3.Iterate loop -- for I in S3.First .. S3.Last loop
       F := S3.Get_Latin_1 (to_index(I)) = 'é';
       if F then
          S3 (I) := 'e';
@@ -111,6 +111,7 @@ begin
       S1 := Null_UXString;
       S2 := 2 * 'z';
       S3 := 4 * "po";
+      Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    end if;
    S3 := "Riri";
    S2 := "Loulou";
