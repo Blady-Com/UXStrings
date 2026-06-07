@@ -61,7 +61,7 @@ begin
    Put_Line (Image (S1.Is_ASCII) & ' ' & Image (S2.Is_ASCII) & ' ' & Image (S3.Is_ASCII));
    Put_Line
      (Image (Index (S1, "ee")) & Image (Index (S2, "ee"), Prefix => ' ') & Image (Index (S3, "ee", 10), Prefix => ' '));
-   C   := S1.Get_ASCII (6);
+   C   := S1.Get_ASCII (5);
    WC  := S1.Get_BMP (7);
    WWC := S1 (1);
    Put_Line

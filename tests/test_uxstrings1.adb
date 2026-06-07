@@ -1,5 +1,5 @@
 pragma Wide_Character_Encoding (UTF8);
-with UXStrings;   use UXStrings;
+with UXStrings;         use UXStrings;
 with UXStrings.Text_IO; use UXStrings.Text_IO;
 with UXStrings.Conversions;
 with UXStrings.Hash;
@@ -19,7 +19,7 @@ procedure Test_UXStrings1 is
    procedure Send (Msg : UTF_8_Character_Array) is
    begin
       for Code of Msg loop
-         Put (Image(Character'pos (Code), 16));
+         Put (Image (Character'Pos (Code), 16));
       end loop;
       New_Line;
    end;
@@ -30,12 +30,19 @@ procedure Test_UXStrings1 is
    WC         : Wide_Character;
    WWC        : Wide_Wide_Character;
    F          : Boolean;
-   D : constant array (Positive range <>) of Natural := (16#0075#, 16#003E#, 16#30E3#, 16#03A3#);
+   First_S3   : Positive;
+   Last_S3    : Natural;
+   D          : constant array (Positive range <>) of Natural := (16#0075#, 16#003E#, 16#30E3#, 16#03A3#);
    --     Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
 
    UXSL1 : constant UXStrings.Lists.UXString_List := ["Ada", "Strings", "Wide_Wide_Maps", "Wide_Wide_Constants", "Lower_Case_Map"];
+ 
    S4 : constant UXString := "Ada.Strings.Wide_Wide_Maps.Is_Subset(Item, My_Set)";
    S5 : constant UXString := "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/Current/lib/libpython3.9.dylib";
+
+   SA1 : constant String (9 .. 38) := "était blah blahétait blah blah";
+   SA2 : constant BMP_Character_Array (57 .. 106) := "une soirée passée à étudier la physique ω=Δθ/Δt...";
+   SA3 : constant Unicode_Character_Array (109 .. 160) :="une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
 
 begin
    -- Change the default to LF and UTF-8
@@ -43,42 +50,46 @@ begin
    Line_Mark (LF_Ending);
    Scheme (Current_Output, UTF_8);
 
-   S1 := From_Latin_1 ("était blah blah");
-   S2 := From_BMP ("une soirée passée à étudier la physique ω=Δθ/Δt...");
-   S3 := From_Unicode ("une soirée passée à étudier les mathématiques ℕ⊂𝕂...");
+   S1 := From_Latin_1 (SA1 (9..23));
+   S2 := From_BMP (SA2);
+   S3 := From_Unicode (SA3);
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Send (To_UTF_8 (S1) & To_UTF_8 (S3));
-   S2  := "Received: " & From_UTF_8 (Receive);
+   S2 := "Received: " & From_UTF_8 (Receive);
    S3 := S1 & " - Sent ok";
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
-   S1 := 4*'.';
+   S1 := 4 * '.';
    --     S2 := From_BMP (Data);
    --     S3 := 4*'.';
    --     for I in Data'Range loop
    --        S3(I) := Data (I); -- discriminant check failed
    --     end loop;
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
-   S1 := "était blah blah";
-   S2 := "une soirée passée à étudier la physique ω=Δθ/Δt...";
-   S3 := "une soirée passée à étudier les mathématiques ℕ⊂𝕂...";
+   S1 := From_Latin_1 (SA1 (24..38));
+   S2 := From_BMP (SA2);
+   S3 := From_Unicode (SA3);
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Put_Line (Image(Index (S1, "ée")) & Image(Index (S2, "ée"),prefix=> ' ') & Image(index (S3, "ée", 10),prefix =>' '));
-   C   := S1.Get_Latin_1 (6);
+   Find_Token (S3, Ada.Strings.Wide_Wide_Maps.To_Set(" "), Ada.Strings.Inside, First_S3, Last_S3);
+   Put_Line (Image(First_S3) & ',' & Image(Last_S3));
+   C   := S1.Get_Latin_1 (5);
    WC  := S1.Get_BMP (7);
    WWC := S1 (1);
-   Put_Line (Image(Character'pos (C), 16) & ',' & Image(Wide_Character'pos (WC), 16)  & ','& Image(Wide_Wide_Character'pos (WWC), 16));
+   Put_Line
+     (Image (Character'Pos (C), 16) & ',' & Image (Wide_Character'Pos (WC), 16) & ',' &
+      Image (Wide_Wide_Character'Pos (WWC), 16));
    for I in S3 loop
-      F   := S3.Get_Latin_1 (I) = 'é';
+      F := S3.Get_Latin_1 (I) = 'é';
 --        if F then
 --           Replace_Latin_1 (S2 ,I, 'e');
 --        end if;
       WWC := S3 (I);
-      Put_Line (Image(I) & ':' & Image(Wide_Wide_Character'pos (WWC), 16) & ',' & Image(F));
+      Put_Line (Image (I) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
    for CC of S2 loop
       WWC := CC;
       F   := CC = 'é';
-      Put_Line (Image(Wide_Wide_Character'pos (WWC), 16)  & ','& Image(F));
+      Put_Line (Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
    end loop;
 --     Replace_Unicode (S1 ,3, WWC);
 --     S1.Replace_BMP (2, WC);
@@ -93,14 +104,14 @@ begin
    S2 := "Loulou";
    S1 := " et Fifi";
    S2.Append (S1);
-   S1.Prepend(S3);
+   S1.Prepend (S3);
    Put_Line (S1 & Line_Mark & S2 & Line_Mark & S3);
    Put_Line (Image(Integer(UXStrings.Hash(S1)),16));
    Put_Line (Image (Value("  + 73")));
    C := S1.To_Latin_1 (3);
-   Put_Line (Image(Character'pos (C), 16));
+   Put_Line (Image (Character'Pos (C), 16));
    C := S1.Get_Latin_1 (3); -- same result but avoid all string conversion
-   Put_Line (Image(Character'pos (C), 16));
+   Put_Line (Image (Character'Pos (C), 16));
    Put_Line (Format (5, 2, True, 10, Center, '@'));
 
    Put_Line (Image(S2.Count ("lo", Ada.Strings.Wide_Wide_Maps.Wide_Wide_Constants.Lower_Case_Map)));

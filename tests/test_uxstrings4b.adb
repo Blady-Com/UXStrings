@@ -30,7 +30,7 @@ procedure Test_UXStrings4b is
    WWC        : Wide_Wide_Character;
    F          : Boolean;
    D          : constant array (Positive range <>) of Natural := (16#0075#, 16#003E#, 16#30E3#, 16#03A3#);
-   Data : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
+   Data       : constant BMP_Character_array := (for I in D'Range => BMP_Character'val (D(I)));
 
 begin
    -- Change the default to LF and ASCII
@@ -62,16 +62,16 @@ begin
    Put_Line (Image (S1.Is_ASCII) & ' ' & Image (S2.Is_ASCII) & ' ' & Image (S3.Is_ASCII));
    Put_Line
      (Image (Index (S1, "ee")) & Image (Index (S2, "ee"), Prefix => ' ') & Image (Index (S3, "ee", 10), Prefix => ' '));
-   C   := S1.Get_ASCII (6);
+   C   := S1.Get_ASCII (5);
    WC  := S1.Get_BMP (7);
    WWC := S1 (1);
    Put_Line
      (Image (Character'Pos (C), 16) & ',' & Image (Wide_Character'Pos (WC), 16) & ',' &
-        Image (Wide_Wide_Character'Pos (WWC), 16));
-   for I in S3.iterate loop
+      Image (Wide_Wide_Character'Pos (WWC), 16));
+   for I in S3.Iterate loop
       F := S3.Get_ASCII (to_index(I)) = 'e';
       if F then
-         S3(I) := 'e';
+         S3 (I) := 'e';
       end if;
       WWC := S3 (I);
       Put_Line (Image (to_index(I)) & ':' & Image (Wide_Wide_Character'Pos (WWC), 16) & ',' & Image (F));
