@@ -4,7 +4,7 @@
 -- ROLE                         : UXString implementation.
 -- NOTES                        : Ada 2022
 --
--- COPYRIGHT                    : (c) Pascal Pignard 2025
+-- COPYRIGHT                    : (c) Pascal Pignard 2026
 -- LICENCE                      : CeCILL-C (https://cecill.info)
 -- CONTACT                      : http://blady.chez.com
 -------------------------------------------------------------------------------
@@ -856,8 +856,12 @@ package body UXStrings is
      (Source  : UXString; Pattern : UXString; From : Positive; Going : Direction := Forward;
       Mapping : Wide_Wide_Character_Mapping := Identity) return Natural
    is
+      Ind : Natural := Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
    begin
-      return Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
+      if Ind > 0 then
+         Ind := Ind + 1 - Source.Chars'First;
+      end if;
+      return Ind;
    end Index;
 
    -----------
@@ -868,8 +872,12 @@ package body UXStrings is
      (Source  : UXString; Pattern : UXString; From : Positive; Going : Direction := Forward;
       Mapping : not null Wide_Wide_Character_Mapping_Function) return Natural
    is
+      Ind : Natural := Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
    begin
-      return Index (Source.Chars.all, Pattern.Chars.all, Source.Chars'First + From - 1, Going, Mapping);
+      if Ind > 0 then
+         Ind := Ind + 1 - Source.Chars'First;
+      end if;
+      return Ind;
    end Index;
 
    -----------
@@ -880,8 +888,12 @@ package body UXStrings is
      (Source : UXString; Set : Wide_Wide_Character_Set; From : Positive; Test : Membership := Inside;
       Going  : Direction := Forward) return Natural
    is
+      Ind : Natural := Index (Source.Chars.all, Set, Source.Chars'First + From - 1, Test, Going);
    begin
-      return Index (Source.Chars.all, Set, Source.Chars'First + From - 1, Test, Going);
+      if Ind > 0 then
+         Ind := Ind + 1 - Source.Chars'First;
+      end if;
+      return Ind;
    end Index;
 
    ---------------------
