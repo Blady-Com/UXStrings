@@ -164,6 +164,7 @@ These implementations which are only for demonstrate the possible usages of UXSt
 
 - not thread safe
 - single character assignment is not implemented in UXS1, UXS2 and UXS3 but is implemented in UXS4 and UXS5.
+- Ada 20222 iteration scheme is not implemented in UXS1, UXS2 and UXS3 but is implemented in UXS4 and UXS5.
 - only few API are implemented
 
 ### Future implementations
