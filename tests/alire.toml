@@ -1,0 +1,17 @@
+name = "uxstrings_test"
+description = "Test suite of Unicode Extended Strings"
+version = "0.9.4+alpha-20260718"
+tags = ["uxstrings", "test", "unicode", "dynamic", "string"]
+
+authors = ["Pascal Pignard"]
+maintainers = ["Pascal Pignard <blady.net@orange.fr>"]
+maintainers-logins = ["Blady-Com"]
+website = "https://github.com/Blady-Com/UXStrings"
+
+licenses = "CECILL-C"
+
+[[depends-on]]
+uxstrings = "^0.9"
+
+[[pins]]
+uxstrings = { path='..' }
